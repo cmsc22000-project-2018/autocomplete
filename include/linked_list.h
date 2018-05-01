@@ -19,3 +19,5 @@ void push(struct Node** head_ref, void *new_data, size_t data_size);
 void append(struct Node** tail_ref, void *new_data, size_t data_size);
 
 void fmap(struct Node *node, void (*fptr)(void *));
+
+void free_linked_list(struct Node *node);

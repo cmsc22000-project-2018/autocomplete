@@ -6,6 +6,7 @@
 // C program for generic linked list
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "linked_list.h"
 
 /* I've left this function for reference only, append (created by tweaking
@@ -61,6 +62,18 @@ void fmap(struct Node *node, void (*fptr)(void *))
     while (node != NULL)
     {
         (*fptr)(node->data);
+        node = node->next;
+    }
+}
+
+void free_linked_list(struct Node *node)
+{
+    assert(node != NULL);
+
+    struct Node* temp = NULL;
+    while (node->next != NULL) {
+        temp = node->next;
+        free(node);
         node = node->next;
     }
 }

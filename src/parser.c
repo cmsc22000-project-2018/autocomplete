@@ -65,7 +65,9 @@ void print_children(void* s)
     fprintf(stdout, ": %d [", num_children);
     for (int i = 0; i < num_children; i++) {
         fprintf(stdout, "%s", children[i]);
-        fprintf(stdout, ", ");
+        if (i != num_children - 1) {
+            fprintf(stdout, ", ");
+        }
     }
     fprintf(stdout, "]\n");
 
@@ -75,8 +77,7 @@ void print_children(void* s)
 int main(int argc, char* argv[])
 {
     init_parser();
-    struct Node* prefixes = malloc(50); //TODO Fix this malloc
-
+    struct Node* prefixes = malloc(sizeof(struct Node));
     char* s = NULL;
 
     if (!read_string(&s)) return 1;
