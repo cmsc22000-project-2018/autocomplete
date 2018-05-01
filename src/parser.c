@@ -1,3 +1,8 @@
+/* This parser was taken from the cs152coin project
+   in CS 15200, winter 2018. The testing files, and
+   a select few changes, are not part of the original parser. */
+
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
