@@ -103,6 +103,7 @@ void print_children(void* s, const void* b, const void* n)
 
 int main(int argc, char* argv[])
 {
+    //TODO: create flag arguments to ensure proper values pulled.  
     if (argc > 1) {
         int showWords = atoi(argv[1]);
         int nWords;
