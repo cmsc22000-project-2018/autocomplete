@@ -20,4 +20,6 @@ void append(struct Node** tail_ref, void *new_data, size_t data_size);
 
 void fmap(struct Node *node, void (*fptr)(void *));
 
+void fmap2(struct Node *node, void (*fptr)(void *, const void*, const void*), const void* a, const void* b);
+
 void free_linked_list(struct Node *node);

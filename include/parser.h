@@ -14,4 +14,4 @@ int read_string(char** s);
 //The following are temporary only
 char** get_children(char* s, int* n);
 
-void print_children(void* s);
+void print_children(void* s, const void* b, const void* n);

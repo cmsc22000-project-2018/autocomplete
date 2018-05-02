@@ -51,6 +51,9 @@ int read_string(char** s)
 // Functions for testing only (though main is mostly accurate)
 #include "linked_list.h"
 
+//This constant should also exist in the eventual main file
+#define SHOWNWORDS 10;
+
 char** get_children(char* s, int* n)
 {
     char** children = malloc(3 * 50); //Temporary hard value
@@ -61,43 +64,73 @@ char** get_children(char* s, int* n)
     return children;
 }
 
-//Needs tweaking to print to proper file
-void print_children(void* s)
+/* Prints the prefix, the number of children, if b==1 also the first n children.
+   TODO improve spacing to be more uniform across prefix lengths, i.e.
+       prefixlong:    n [words, go, here]
+       pref:          n [other, words, here]
+*/
+void print_children(void* s, const void* b, const void* n)
 {
     int num_children;
     char** children = get_children((char*) s, &num_children);
-    fprintf(stdout, "%s", (char *) s);
-    fprintf(stdout, ": %d [", num_children);
-    for (int i = 0; i < num_children; i++) {
-        fprintf(stdout, "%s", children[i]);
-        if (i != num_children - 1) {
-            fprintf(stdout, ", ");
+    printf("%s", (char *) s);
+    printf(": %d", num_children);
+
+    if (*((int*) b)) {
+        printf(" [");
+        for (int i = 0; i < num_children && i < *((int*) n); i++) {
+            printf("%s", children[i]);
+            if (i != num_children - 1) {
+                printf(", ");
+            }
+            if (i == *((int*) n) - 1 && *((int*) n) < num_children) {
+                printf("...");
+            }
         }
+        //Prevent [] display with n = 0
+        if (*((int*) n) == 0) {
+            printf("...");
+        }
+
+        printf("]\n");
     }
-    fprintf(stdout, "]\n");
+    else {
+        printf("\n");
+    }
 
     free(children);
 }
 
 int main(int argc, char* argv[])
 {
-    init_parser();
-    struct Node* prefixes = malloc(sizeof(struct Node));
-    char* s = NULL;
+    if (argc > 1) {
+        int showWords = atoi(argv[1]);
+        int nWords;
+        if (argc > 2) {
+            nWords = atoi(argv[2]);
+        }
+        else {
+            nWords = SHOWNWORDS;
+        }
 
-    if (!read_string(&s)) return 1;
+        init_parser();
+        struct Node* prefixes = malloc(sizeof(struct Node));
+        char* s = NULL;
 
-    //This changes prefixes to point to the first node with data
-    append(&prefixes, s, sizeof(s));
+        if (!read_string(&s)) return 1;
 
-    next_token();
-    struct Node* last_prefix = prefixes;
-    while (read_string(&s)) {
-        append(&last_prefix, s, sizeof(s));
+        //This changes prefixes to point to the first node with data
+        append(&prefixes, s, sizeof(s));
+
         next_token();
-    }
+        struct Node* last_prefix = prefixes;
+        while (read_string(&s)) {
+            append(&last_prefix, s, sizeof(s));
+            next_token();
+        }
 
-    fmap(prefixes, print_children);
+        fmap2(prefixes, print_children, (const void*) &showWords, (const void*) &nWords);
+    }
 
     return 0;
 }

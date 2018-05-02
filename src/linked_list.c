@@ -66,6 +66,18 @@ void fmap(struct Node *node, void (*fptr)(void *))
     }
 }
 
+/* Version of fmap that also accepts 2 arguments to the function.
+   In other laguages a lambda would be used with the base fmap,
+   but naturally C doesn't allow that. */
+void fmap2(struct Node *node, void (*fptr)(void *, const void*, const void*), const void* a, const void* b)
+{
+    while (node != NULL)
+    {
+        (*fptr)(node->data, a, b);
+        node = node->next;
+    }
+}
+
 void free_linked_list(struct Node *node)
 {
     assert(node != NULL);
