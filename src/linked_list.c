@@ -87,6 +87,6 @@ void free_linked_list(struct Node *node)
     while (node->next != NULL) {
         temp = node->next;
         free(node);
-        node = node->next;
+        node = temp;
     }
 }

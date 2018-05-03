@@ -13,7 +13,7 @@ prefix_t* prefix_new(char* p, char** c, int n)
     assert(pref != NULL);
 
     pref->prefix = malloc(MAXLENGTH);
-    strncpy(pref->prefix, p, (MAXLENGTH > strlen(p) ? strlen(p) : MAXLENGTH));
+    strncpy(pref->prefix, p, (MAXLENGTH > (strlen(p) + 1) ? (strlen(p) + 1) : MAXLENGTH));
 
     pref->nComps = n;
 

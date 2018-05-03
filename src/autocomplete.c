@@ -13,11 +13,12 @@
    the same signature from the API team */
 prefix_t* get_children(char* s)
 {
-    char** children = malloc(3 * 50); //Temporary hard value
+    char** children = malloc(3 * 64); //Temporary hard value
     children[0] = (char *) s;
     children[1] = "second";
     children[2] = "prefixthree";
     prefix_t* prefix = prefix_new(s, children, 3); //Temporary hard value
+    free(children);
     return prefix;
 }
 
@@ -83,11 +84,13 @@ int main(int argc, char* argv[])
         next_token();
         struct Node* last_prefix = prefixes;
         while (read_string(&s)) {
-            append(&last_prefix, s, sizeof(s));
+            append(&last_prefix, s, sizeof(s) + 1); //This one solves a lot of Valgrind errors. TODO: why?
             next_token();
         }
 
         fmap2(prefixes, print_children, (const void*) &showWords, (const void*) &nWords);
+
+        free_linked_list(prefixes);
     }
 
     return 0;
