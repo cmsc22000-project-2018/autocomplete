@@ -78,6 +78,7 @@ void fmap2(struct Node *node, void (*fptr)(void *, const void*, const void*), co
     }
 }
 
+/* Self explanatory, but this is one of my additions*/
 void free_linked_list(struct Node *node)
 {
     assert(node != NULL);

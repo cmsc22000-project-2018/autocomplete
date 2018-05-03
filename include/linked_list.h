@@ -1,3 +1,6 @@
+#ifndef LINKED_LIST_H
+#define LINKED_LIST_H
+
 /* Again, credit to
    https://www.geeksforgeeks.org/generic-linked-list-in-c-2/
    for this implementation */
@@ -6,13 +9,13 @@
 #include <stdlib.h>
 
 /* A linked list node */
-struct Node
+typedef struct Node
 {
     // Any data type can be stored in this node
     void  *data;
 
     struct Node *next;
-};
+} node_t;
 
 void push(struct Node** head_ref, void *new_data, size_t data_size);
 
@@ -23,3 +26,5 @@ void fmap(struct Node *node, void (*fptr)(void *));
 void fmap2(struct Node *node, void (*fptr)(void *, const void*, const void*), const void* a, const void* b);
 
 void free_linked_list(struct Node *node);
+
+#endif //LINKED_LIST_H
