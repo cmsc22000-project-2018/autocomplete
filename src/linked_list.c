@@ -42,6 +42,7 @@ void append(struct Node** tail_ref, void *new_data, size_t data_size)
     struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
 
     new_node->data  = malloc(data_size);
+    new_node->next = NULL;
     (*tail_ref)->next = (new_node);
 
     // Copy contents of new_data to newly allocated memory.

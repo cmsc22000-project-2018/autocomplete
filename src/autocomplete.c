@@ -13,11 +13,12 @@
    the same signature from the API team */
 prefix_t* get_children(char* s)
 {
-    char** children = malloc(3 * 64); //Temporary hard value
+    char** children = malloc(4*sizeof(char*)); //Temporary hard value
     children[0] = (char *) s;
     children[1] = "second";
     children[2] = "prefixthree";
-    prefix_t* prefix = prefix_new(s, children, 3); //Temporary hard value
+    children[3] = "another";
+    prefix_t* prefix = prefix_new(s, children, 4); //Temporary hard value
     free(children);
     return prefix;
 }
@@ -79,12 +80,14 @@ int main(int argc, char* argv[])
         if (!read_string(&s)) return 1;
 
         //This changes prefixes to point to the first node with data
+        struct Node* store_old = prefixes;
         append(&prefixes, s, sizeof(s));
+        free(store_old);
 
         next_token();
         struct Node* last_prefix = prefixes;
         while (read_string(&s)) {
-            append(&last_prefix, s, sizeof(s) + 1); //This one solves a lot of Valgrind errors. TODO: why?
+            append(&last_prefix, s, sizeof(s) + 1);
             next_token();
         }
 

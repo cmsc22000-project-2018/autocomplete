@@ -1,5 +1,5 @@
 prefone: 3 [prefone, second, ...]
 another: 3 [another, second, ...]
-threeeee: 3 [threeeee, second, ...]
-hi: 3 [hi, second, ...]
-bye: 3 [bye, second, ...]
+threeeee: 3 [threeeeeXLT¾,, second, ...]
+hi: 3 [hiT¾,, second, ...]
+bye: 3 [bye¾,, second, ...]
