@@ -15,11 +15,13 @@
 prefix_t* get_children(char* s)
 {
     char** children = malloc(4*sizeof(char*)); //Temporary hard value
-    children[0] = (char *) s;
+    children[0] = malloc(sizeof(s) + 1);
+    strcpy(children[0], s);
     children[1] = "second";
     children[2] = "prefixthree";
     children[3] = "another";
     prefix_t* prefix = prefix_new(s, children, 4); //Temporary hard value
+    free(children[0]);
     free(children);
     return prefix;
 }

@@ -18,12 +18,12 @@ prefix_t* prefix_new(char* p, char** c, int n)
     pref->nComps = n;
 
     pref->completions = malloc(MAXLENGTH * MAXPREFS);
-
-    for(int i = 0; i < n; i++) {
-        pref->completions[i] = malloc(MAXLENGTH);
-        strncpy(pref->completions[i], c[i], (MAXLENGTH > strlen(c[i]) ? strlen(c[i]) : MAXLENGTH));
+    if (c != NULL) {
+        for(int i = 0; i < n; i++) {
+            pref->completions[i] = malloc(MAXLENGTH > (strlen(c[i]) + 1) ? strlen(c[i]) + 1 : MAXLENGTH);
+            strncpy(pref->completions[i], c[i], (MAXLENGTH > (strlen(c[i]) + 1) ? strlen(c[i]) + 1 : MAXLENGTH));
+        }
     }
-
     return pref;
 }
 
