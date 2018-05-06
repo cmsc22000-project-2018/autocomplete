@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "parser.h"
-#include "simclist.h"
 #include "prefix.h"
 #include "autocomplete.h"
 
@@ -64,7 +63,6 @@ void print_children(int b, int n, char* s)
 
 //TODO: create flag arguments to ensure proper values pulled.
 //TODO: add else to main if, leading to interactive mode
-//TODO: solve valgrind errors and magical print statement
 int main(int argc, char* argv[])
 {
     if (argc > 1) {
