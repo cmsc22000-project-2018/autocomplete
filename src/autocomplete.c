@@ -62,6 +62,7 @@ void print_children(int b, int n, char* s)
 
 //TODO: create flag arguments to ensure proper values pulled.
 //TODO: add else to main if, leading to interactive mode
+//TODO: solve valgrind errors and magical print statement
 int main(int argc, char* argv[])
 {
     if (argc > 1) {
@@ -85,11 +86,19 @@ int main(int argc, char* argv[])
         int i = 0;
 
         while (read_string(&s) && i < MAXPREFS) {
-            s_array[i] = malloc(sizeof(s) + 1);
+            s_array[i] = malloc(sizeof(s));
             strcpy(s_array[i], s);
             list_append(&prefixes, &(s_array[i]));
+
+            //This loop -- and in fact the print statement within it -- is
+            //currently necessary for the code to not segfault. That includes
+            //changing this to a fprintf from a printf ???????
+
+            //Further notes: fprintf to stdout works. However, fprintf to stderr
+            //prints 'another' -- and only 'another' -- as (null) and segfaults
+            //when 'another''s children would be accessed. ??????
             for (int j = -1; j < i; j++) {
-                printf("%s\n", *(char **) list_get_at(&prefixes, j+1));
+                fprintf(stdout,"%s\n", *(char **) list_get_at(&prefixes, j+1));
             }
             i++;
             next_token();
