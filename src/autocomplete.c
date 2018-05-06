@@ -76,44 +76,12 @@ int main(int argc, char* argv[])
         }
 
         init_parser();
-        list_t prefixes;
-        list_init(&prefixes);
         char* s = NULL;
-        char** s_array = malloc(MAXPREFS);
 
-        list_attributes_copy(&prefixes, list_meter_string, 1);
-
-        int i = 0;
-
-        while (read_string(&s) && i < MAXPREFS) {
-            s_array[i] = malloc(sizeof(s));
-            strcpy(s_array[i], s);
-            list_append(&prefixes, &(s_array[i]));
-
-            //This loop -- and in fact the print statement within it -- is
-            //currently necessary for the code to not segfault. That includes
-            //changing this to a fprintf from a printf ???????
-
-            //Further notes: fprintf to stdout works. However, fprintf to stderr
-            //prints 'another' -- and only 'another' -- as (null) and segfaults
-            //when 'another''s children would be accessed. ??????
-            for (int j = -1; j < i; j++) {
-                fprintf(stdout,"%s\n", *(char **) list_get_at(&prefixes, j+1));
-            }
-            i++;
+        while (read_string(&s)) {
+            print_children(showWords, nWords, s);
             next_token();
         }
-
-        char* pref;
-        list_iterator_start(&prefixes);
-        while (list_iterator_hasnext(&prefixes)) {
-            pref = *(char **)list_iterator_next(&prefixes);
-            print_children(showWords, nWords, pref);
-        }
-        list_iterator_stop(&prefixes);
-
-        list_destroy(&prefixes);
-        free(s_array);
     }
 
     return 0;
