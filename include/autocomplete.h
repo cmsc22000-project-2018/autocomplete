@@ -11,6 +11,6 @@
 prefix_t* get_children(char* s);
 
 // Prints the batch output, including n words if b.
-void print_children(void* s, const void* b, const void* n);
+void print_children(int b, int n, char* s);
 
 #endif //AUTOCOMPLETE_H

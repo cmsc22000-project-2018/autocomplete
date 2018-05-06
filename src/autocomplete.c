@@ -3,11 +3,12 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "parser.h"
-#include "linked_list.h"
+#include "simclist.h"
 #include "prefix.h"
 #include "autocomplete.h"
 
 #define SHOWNWORDS 10
+#define MAXPREFS 2048
 
 /* This is a placeholder function until we can call a function with
    the same signature from the API team */
@@ -28,25 +29,25 @@ prefix_t* get_children(char* s)
        prefixlong:    n [words, go, here]
        pref:          n [other, words, here]
 */
-void print_children(void* s, const void* b, const void* n)
+void print_children(int b, int n, char* s)
 {
-    prefix_t* prefix = get_children((char*) s);
+    prefix_t* prefix = get_children(s);
     printf("%s", prefix->prefix);
     printf(": %d", prefix->nComps);
 
-    if (*((int*) b)) {
+    if (b) {
         printf(" [");
-        for (int i = 0; i < prefix->nComps && i < *((int*) n); i++) {
+        for (int i = 0; i < prefix->nComps && i < n; i++) {
             printf("%s", prefix->completions[i]);
             if (i != prefix->nComps - 1) {
                 printf(", ");
             }
-            if (i == *((int*) n) - 1 && *((int*) n) < prefix->nComps) {
+            if (i == n - 1 && n < prefix->nComps) {
                 printf("...");
             }
         }
         //Prevent [] display with n = 0
-        if (*((int*) n) == 0) {
+        if (n == 0) {
             printf("...");
         }
 
@@ -74,26 +75,36 @@ int main(int argc, char* argv[])
         }
 
         init_parser();
-        struct Node* prefixes = malloc(sizeof(struct Node));
+        list_t prefixes;
+        list_init(&prefixes);
         char* s = NULL;
+        char** s_array = malloc(MAXPREFS);
 
-        if (!read_string(&s)) return 1;
+        list_attributes_copy(&prefixes, list_meter_string, 1);
 
-        //This changes prefixes to point to the first node with data
-        struct Node* store_old = prefixes;
-        append(&prefixes, s, sizeof(s));
-        free(store_old);
+        int i = 0;
 
-        next_token();
-        struct Node* last_prefix = prefixes;
-        while (read_string(&s)) {
-            append(&last_prefix, s, sizeof(s) + 1);
+        while (read_string(&s) && i < MAXPREFS) {
+            s_array[i] = malloc(sizeof(s) + 1);
+            strcpy(s_array[i], s);
+            list_append(&prefixes, &(s_array[i]));
+            for (int j = -1; j < i; j++) {
+                printf("%s\n", *(char **) list_get_at(&prefixes, j+1));
+            }
+            i++;
             next_token();
         }
 
-        fmap2(prefixes, print_children, (const void*) &showWords, (const void*) &nWords);
+        char* pref;
+        list_iterator_start(&prefixes);
+        while (list_iterator_hasnext(&prefixes)) {
+            pref = *(char **)list_iterator_next(&prefixes);
+            print_children(showWords, nWords, pref);
+        }
+        list_iterator_stop(&prefixes);
 
-        free_linked_list(prefixes);
+        list_destroy(&prefixes);
+        free(s_array);
     }
 
     return 0;
