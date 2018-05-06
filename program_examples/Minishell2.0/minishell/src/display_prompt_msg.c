@@ -76,6 +76,7 @@ void	display_prompt_msg(void)
 	parsed_cwd = parse_home_path(cwd, 0);
 	ft_putstr(parsed_cwd);
 	free(parsed_cwd);
-	ft_putstr(" \033[31m︻\033[0m\033[32m┳\033[0m\033[33mデ");
-	ft_putstr("\033[0m\033[34m═\033[0m\033[35m—\033[0m$ ");
+	ft_putstr(">>>: ");
+        //ft_putstr(" \033[31m︻\033[0m\033[32m┳\033[0m\033[33mデ");
+	//ft_putstr("\033[0m\033[34m═\033[0m\033[35m—\033[0m$ ");
 }
