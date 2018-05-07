@@ -6,25 +6,21 @@ CC = gcc
 CFLAGS = -O2 -Wall -Wextra -g -fPIC -c
 RM = rm -f
 
-SRCS = /src/autocomplete.c /src/parser.c /src/prefix.c
+SRCS = ./src/autocomplete.c ./src/parser.c ./src/prefix.c
 OBJS = $(SRCS:.c=.o)
 
 #Resulting binary from makefile
 BINS = autocomplete
 
 #Flags location for header files
-IFLAGS = -I/include/
+IFLAGS = -I./include/
 
 all: $(BINS)
 
-#Standard as in lab, also seen in libgeometry
 clean:
-  $(RM) $(OBJS) $(BINS)
+  $(RM) $(BINS)
 
-$(OBJS): $(SRCS)
-  $(CC) -c $(IFLAGS) $^
-
-$(BINS): $(OBJS)
-  $(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
+$(BINS): $(SRCS)
+  $(CC) $(IFLAGS) $^ -o $(BINS)
 
 test:

@@ -39,7 +39,7 @@ int prefix_init(prefix_t* pref, char* p, char** c, int n)
     pref->nComps = n;
 
     for(int i = 0; i < n; i++) {
-        strncpy(pref->completions[i], c[i], MAXLENGTH);
+        strncpy(pref->completions[i], c[i], (MAXLENGTH > (strlen(c[i]) + 1) ? strlen(c[i]) + 1 : MAXLENGTH));
     }
 
     return 0;
