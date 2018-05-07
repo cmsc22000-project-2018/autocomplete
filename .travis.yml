@@ -1,0 +1,9 @@
+language: c
+compiler: gcc
+jobs:
+    include:
+        - stage: build
+          script: echo TemporaryCIPacifier
+        #  script: make
+        #- stage: test
+        #  script: make test

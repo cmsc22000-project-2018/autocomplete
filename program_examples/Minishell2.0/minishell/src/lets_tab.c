@@ -44,7 +44,6 @@ void autocomplete(char *word, int length)
   
   int x, y;
   getyx(stdscr, y, x);
-  x--;
 
   printw("\nHere are suggestions to automplete \"%s\"\n", word);
   if (length > 10) {
@@ -60,9 +59,7 @@ void autocomplete(char *word, int length)
   c = getch();
   wmove(stdscr, y, x);
   wrefresh(stdscr);
-  /* Temporary print, when we get the tries we'll figure
-   * out a different printing scheme
-   */
+  // Temporary print, when we get the tries we'll figure
   printw("%c ", c+49);
   clrtobot();
 }
@@ -78,44 +75,25 @@ int lets_tab_builtin(char **args)
   cbreak();
   noecho();
   while('~' != (c = getch())) {
-    
-  /* Jonas: Known bug:
-   * This prevents the tab key from being printed, which we want.
-   * But, this also makes it such that the last letter of the
-   * word to autocomplete doesn't get fed into the autocomplete
-   * function. I've tried my best to fix it, but cannot
-   * :(
-   */
-
-    if (c != 9)
-    {
+    if (c != 9) {
       printw("%c", c);
       word = ll_new(word);
       word->letter = c;
       length++;
     }
     
-
-    /* Jonas 05.06: autocomplete only operates on one word
-     * that said, this is a pretty bad way to do it
-     * we should probably fix it, because right now there
-     * isn't really any reason to use an llist, we could just
-     * store the most recent word.
-     */
     if (c == 32) {
       length = 0;
       word = NULL;
       word = ll_new(word);
     }
     if (c == 9) {
-      
       char *wordTyped = malloc(sizeof(char)*length);
-      length--;
       int i = length;
       while (i != 0) {
-        word = ll_pop(word);
         wordTyped[i-1] = word->letter;
         i--;
+        word = ll_pop(word);
       }
       autocomplete(wordTyped, length);
       length = 0;

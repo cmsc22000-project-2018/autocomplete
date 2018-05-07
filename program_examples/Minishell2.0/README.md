@@ -42,6 +42,6 @@ autocomplete function in lets_tab.c modified:
 -removes autocomplete prompt from screen after selection
 -doesn't actually autocomplete anything yet, but that will easy to implement when we get the tries
 
-known bugs:
--in order to properly autocomplete a word, need to enter in an extra character - ie, in order to autocomplete "hello", you need to enter "hello,". This is a result of the lines of code that stop tab from being printed, and I have no idea how to fix that issue
+known bugs - closed.
+-in order to properly autocomplete a word, need to enter in an extra character - ie, in order to autocomplete "hello", you need to enter "hello,". This is a result of the lines of code that stop tab from being printed, and I have no idea how to fix that issue EDIT 9:00PM 05/06: THIS BUG IS FIXED.
 
