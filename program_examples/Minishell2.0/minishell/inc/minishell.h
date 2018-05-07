@@ -26,6 +26,11 @@
 char					**g_envv;
 
 /*
+** src/lets_tab.c
+*/
+int lets_tab_builtin(char **comand);
+
+/*
 ** src/hello_cs220.c
 */
 int hello_builtin(char **command);

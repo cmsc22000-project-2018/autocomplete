@@ -63,6 +63,8 @@ static int		check_builtins(char **command)
 		return (unsetenv_builtin(command + 1));
 	else if (ft_strequ(command[0], "hello"))
 	  return (hello_builtin(command + 1));
+	else if (ft_strequ(command[0], "autocomplete"))
+	  return (lets_tab_builtin(command + 1));
 	else if (ft_strequ(command[0], "env"))
 	{
 		print_env();
