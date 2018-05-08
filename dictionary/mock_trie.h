@@ -61,5 +61,20 @@ int trie_free(trie_t *t);
  */
 int in_trie(char* str, trie_t *t);
 
+/*
+ * Adds a word to trie
+ *
+ * Parameters:
+ *  - str: a string
+ *  - t: a trie.
+ *
+ * Returns:
+ *  1 if word is in the trie
+ *  0 if word is not in the trie
+ */
+int add_to_trie(char *str, trie_t *t);
+
+
+
 
 #endif /* INCLUDE_MOCK_TRIE_H_ */ 

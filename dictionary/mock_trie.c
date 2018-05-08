@@ -75,4 +75,29 @@ int in_trie(char *str, trie_t *t) {
 }
 
 
+/*
+* See mock_trie.h
+*/
+int add_to_trie(char *str, trie_t *t){
+    int i = 0;
 
+    while (i < LEN && t->words[i] != NULL) {
+        if (strcmp(str, t->words[i]) == 0) {
+            return 0;
+        }
+        i++;
+    }
+
+    if (i < LEN) {
+        char *w;
+        w = malloc(sizeof(char) * strlen(str) + 1);
+
+        strncpy(w, str, strlen(str) + 1);
+
+        t->words[i] = w;
+
+        return 1;
+    }
+
+    return -1;
+}

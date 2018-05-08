@@ -68,6 +68,23 @@ int dict_free(dict_t *d);
 int in_dict(char *str, dict_t *d);
 
 
+
+/*
+ * Adds a word to a dictionary
+ *
+ * Parameters:
+ *  - str: A string
+ *  - d: A dictionary
+ *
+ * Returns:
+ *  - 1 upon success
+ *  - 0 if word is already in dictionary
+ *  - -1 if there was an error
+ */
+int add_to_dict(char *str, dict_t *d);
+
+
+
 /*
  * Parses a file and adds all words to the dictionary
  * 
@@ -84,7 +101,7 @@ int read_to_dict(char *file, dict_t *d);
 
 /* Returns true if the given word contains the given prefix entirely */
 /* Code based on code found on https://stackoverflow.com/a/4770992 */
-int prefix_in_word(const char *prefix, const char *word);
+int prefix_in_word(char *prefix, char *word);
 
 /* Prints the prefix, the number of children, if b==1 also the first n child    ren.
    TODO improve spacing to be more uniform across prefix lengths, i.e.
