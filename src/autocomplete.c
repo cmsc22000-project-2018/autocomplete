@@ -9,20 +9,28 @@
 #define SHOWNWORDS 10
 #define MAXPREFS 2048
 
-/* This is a placeholder function until we can call a function with
-   the same signature from the API team */
-prefix_t* get_children(char* s)
+//TODO replace with real children in dict function (and add header in .h file)
+char** get_children_in_dict(char* s, char* tempGarbage)
 {
     char** children = malloc(4*sizeof(char*)); //Temporary hard value
     children[0] = malloc(sizeof(s) + 1);
     strcpy(children[0], s);
-    children[1] = "second";
-    children[2] = "prefixthree";
-    children[3] = "another";
-    prefix_t* prefix = prefix_new(s, children, 4); //Temporary hard value
-    free(children[0]);
-    free(children);
-    return prefix;
+    children[1] = malloc(sizeof("second") + 1);
+    strcpy(children[1], "second");
+    children[2] = malloc(sizeof("prefixthree") + 1);
+    strcpy(children[2], "prefixthree");
+    children[3] = malloc(sizeof("another") + 1);
+    strcpy(children[3], "another");
+
+    tempGarbage = NULL;
+
+    return children;
+}
+
+//TODO replace with real children in dict function (and add header in .h file)
+int num_children_in_dict(char* s, char* tempGarbage) {
+    tempGarbage = NULL;
+    return 4;
 }
 
 /* Prints the prefix, the number of children, if b==1 also the first n children.
@@ -32,7 +40,15 @@ prefix_t* get_children(char* s)
 */
 void print_children(int b, int n, char* s)
 {
-    prefix_t* prefix = get_children(s);
+    prefix_t* prefix;
+    char** children = get_children_in_dict(s, "temp_fake_dict"); //TODO replace with real dict
+    int num_children = num_children_in_dict(s, "temp_fake_dict"); //TODO replace with real dict
+    prefix = prefix_new(s, children, num_children);
+
+    //Currently children ins a memory leak because get_children_in_dict mallocs strings that are never freed
+    //This should be corrected by a 'real' get_children which simply returns pointers to its
+    //own data which is freed elsewhere
+
     printf("%s", prefix->prefix);
     printf(": %d", prefix->nComps);
 
