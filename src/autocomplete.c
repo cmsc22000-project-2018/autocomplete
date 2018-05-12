@@ -2,15 +2,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "parser.h"
 #include "prefix.h"
 #include "autocomplete.h"
 
 #define SHOWNWORDS 10
-#define MAXPREFS 2048
 
 //TODO replace with real children in dict function (and add header in .h file)
-char** get_children_in_dict(char* s, char* tempGarbage)
+char** get_children_in_dict(char* s, FILE* dictionary)
 {
     char** children = malloc(4*sizeof(char*)); //Temporary hard value
     children[0] = malloc(sizeof(s) + 1);
@@ -22,14 +20,14 @@ char** get_children_in_dict(char* s, char* tempGarbage)
     children[3] = malloc(sizeof("another") + 1);
     strcpy(children[3], "another");
 
-    tempGarbage = NULL;
+    dictionary = NULL;
 
     return children;
 }
 
 //TODO replace with real children in dict function (and add header in .h file)
-int num_children_in_dict(char* s, char* tempGarbage) {
-    tempGarbage = NULL;
+int num_children_in_dict(char* s, FILE* dictionary) {
+    dictionary = NULL;
     return 4;
 }
 
@@ -38,11 +36,11 @@ int num_children_in_dict(char* s, char* tempGarbage) {
        prefixlong:    n [words, go, here]
        pref:          n [other, words, here]
 */
-void print_children(int b, int n, char* s)
+void print_children(int b, int n, char* s, FILE* dictionary)
 {
     prefix_t* prefix;
-    char** children = get_children_in_dict(s, "temp_fake_dict"); //TODO replace with real dict
-    int num_children = num_children_in_dict(s, "temp_fake_dict"); //TODO replace with real dict
+    char** children = get_children_in_dict(s, dictionary);
+    int num_children = num_children_in_dict(s, dictionary);
     prefix = prefix_new(s, children, num_children);
 
     //Currently children ins a memory leak because get_children_in_dict mallocs strings that are never freed
@@ -81,24 +79,55 @@ void print_children(int b, int n, char* s)
 //TODO: add else to main if, leading to interactive mode
 int main(int argc, char* argv[])
 {
-    if (argc > 1) {
-        int showWords = atoi(argv[1]);
-        int nWords;
-        if (argc > 2) {
-            nWords = atoi(argv[2]);
-        }
-        else {
-            nWords = SHOWNWORDS;
-        }
+    int showWords = 0;
+    int nWords = SHOWNWORDS;
+    FILE* dictionary; //Once we can, should be initialized to the redis dictionary
+    FILE* prefixFile;
+    FILE* outputFile;
+    int prefixFileSet = 0;
 
-        init_parser();
-        char* s = NULL;
-
-        while (read_string(&s)) {
-            print_children(showWords, nWords, s);
-            next_token();
+    /*Parse input instructions into global variables.
+      Note that argv[0] is ./autocomplete itself, so it is ignored.
+      Currently uses asserts to avoid reading missing arguments,
+      we may want to make this more robust later.
+    */
+    for (int i = 1; i < argc; i+=2) {
+        if (!strncmp(argv[i], "-w", 2)) {
+            assert(i + 1 < argc);
+            showWords = atoi(argv[i + 1]);
+        }
+        if (!strncmp(argv[i], "-n", 2)) {
+            assert(i + 1 < argc);
+            nWords = atoi(argv[i + 1]);
+        }
+        if (!strncmp(argv[i], "-d", 2)) {
+            assert(i + 1 < argc);
+            dictionary = fopen(argv[i + 1], "r");
+        }
+        if (!strncmp(argv[i], "-f", 2)) {
+            assert(i + 1 < argc);
+            prefixFile = fopen(argv[i + 1], "r");
+            prefixFileSet = 1;
+        }
+        if (!strncmp(argv[i], "-o", 2)) {
+            assert(i + 1 < argc);
+            freopen(argv[i + 1], "w", stdout); //Sets stdout to be the file instead of the terminal
         }
     }
+
+    if (prefixFileSet) {
+        char* currentPrefix = malloc(64 * sizeof(char)); //Temporary constant value
+        while (fgets(currentPrefix, 64, prefixFile)) {   //Temporary constant value
+            currentPrefix[strlen(currentPrefix) - 1] = '\0';
+            print_children(showWords, nWords, currentPrefix, dictionary);
+        }
+        free(currentPrefix);
+    }
+    else {
+        //Run interactive mode
+    }
+
+    //Currently there are no fcloses because of valgrind issues, should probably be added though
 
     return 0;
 }

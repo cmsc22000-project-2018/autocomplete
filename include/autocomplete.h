@@ -8,6 +8,6 @@
 #include "prefix.h"
 
 // Prints the batch output, including n words if b.
-void print_children(int b, int n, char* s);
+void print_children(int b, int n, char* s, FILE* dictionary);
 
 #endif //AUTOCOMPLETE_H
