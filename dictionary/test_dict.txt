@@ -4,3 +4,4 @@ Is
 My
 Test
 Dictionary
+!
