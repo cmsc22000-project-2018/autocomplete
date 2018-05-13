@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 # Project file
-NAME = autocomplete_interactive
+NAME = autocomplete
 
 # Project builds and dirs
 SRCDIR = ./src/

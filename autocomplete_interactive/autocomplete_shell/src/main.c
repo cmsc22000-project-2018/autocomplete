@@ -157,13 +157,21 @@ int				main(int ac, char **av, char **envv)
 	char	*input;
 	int		ret;
 	char	**commands;
+        int firstCommand = 0;
 
 	init_envv(ac, av, envv);
 	while (1)
 	{
 		display_prompt_msg();
-		signal(SIGINT, signal_handler);
-		get_input(&input);
+                if (firstCommand == 0) {
+                  input = malloc(sizeof(char) * 13);
+                  strcpy(input, "autocomplete");
+                  input = parse_input(input);
+                  firstCommand++;
+                } else {
+                  signal(SIGINT, signal_handler);
+                  get_input(&input); 
+                }
 		if (ft_isemptystr(input, 1))
 		{
 			free(input);
@@ -175,6 +183,7 @@ int				main(int ac, char **av, char **envv)
 		ft_freestrarr(commands);
 		if (ret == -1)
 			break ;
+                firstCommand++;
 	}
 	ft_freestrarr(g_envv);
 	return (0);
