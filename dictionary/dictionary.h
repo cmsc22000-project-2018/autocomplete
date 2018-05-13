@@ -1,5 +1,6 @@
 /* Majority of the code based on Team Spellcheck's dictionary.h code */
 
+
 /*
  * A dictionary structure built using tries
  */

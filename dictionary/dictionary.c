@@ -1,5 +1,6 @@
 /* Code based on code from Team Spellcheck */
 
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
