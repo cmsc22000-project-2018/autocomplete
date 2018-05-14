@@ -8,21 +8,20 @@
 
 #define SHOWNWORDS 10
 
-//TODO replace with real children in dict function (and add header in .h file)
+// See autocomplete.h
 char** get_children_in_dict(char* s, char* dict_file)
 {
 	dict_t *d = dict_new();
 	int rc = dict_read(d, dict_file);
 	assert (rc == EXIT_SUCCESS); 
 
+	//TODO: function that checks whether given string is a valid prefix
+	// since a prefix could exist that isn't a full word in the dictionary
 	assert((dict_exists(d, s)) == EXIT_SUCCESS);
 
 	int i = 0;
 	int j = 0;
 	char** children = malloc(10*sizeof(char)); //Temporary hard value
-	//TODO: function to tell if a given prefix is a full valid word
-	children[0] = malloc(sizeof(s) + 1);
-	j++;
 
 	while((d->dict)->words[i] != NULL) {
 		//if the prefix is contained fully in a dictionary word
@@ -37,22 +36,9 @@ char** get_children_in_dict(char* s, char* dict_file)
 	}
 
 	return children;	
-/*    char** children = malloc(4*sizeof(char*)); //Temporary hard value
-    children[0] = malloc(sizeof(s) + 1);
-    strcpy(children[0], s);
-    children[1] = malloc(sizeof("second") + 1);
-    strcpy(children[1], "second");
-    children[2] = malloc(sizeof("prefixthree") + 1);
-    strcpy(children[2], "prefixthree");
-    children[3] = malloc(sizeof("another") + 1);
-    strcpy(children[3], "another");
-
-    dictionary = NULL;
-
-    return children;  */
 }
 
-//TODO replace with real children in dict function (and add header in .h file)
+// See autocomplete.h
 int num_children_in_dict(char* s, char* dict_file) {
 	dict_t *d = dict_new();
         int rc = dict_read(d, dict_file);
@@ -62,9 +48,6 @@ int num_children_in_dict(char* s, char* dict_file) {
 
         int i = 0;
         int j = 0;
-
-        //TODO: function to tell if a given prefix is a full valid word
-        j++;
 
         while((d->dict)->words[i] != NULL) {
                 //if the prefix is contained fully in a dictionary word
