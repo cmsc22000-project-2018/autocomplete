@@ -6,7 +6,7 @@ CC = gcc
 CFLAGS = -O2 -Wall -Wextra -g -fPIC -c
 RM = rm -f
 
-SRCS = ./src/autocomplete.c ./src/parser.c ./src/prefix.c
+SRCS = ./src/autocomplete.c ./src/parser.c ./src/prefix.c ./src/dictionary.c
 OBJS = $(SRCS:.c=.o)
 
 #Resulting binary from makefile
