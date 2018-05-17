@@ -112,6 +112,7 @@ int lets_tab_builtin(char **args)
   noecho();
   while('~' != (c = getch())) {
     
+    // Doesn't print tab, bkspace, or del
     if (c != 9 && c != 127 && c != 8) {
       printw("%c", c);
       word = ll_new(word);
@@ -125,23 +126,32 @@ int lets_tab_builtin(char **args)
     }
 
     if (c == 9) {
-      char *wordTyped = malloc(sizeof(char)*(length));
-      //printw("wordTyped: %s", wordTyped);
+      char *wordTyped = malloc(sizeof(char)*(length+1));
       int i = length;
+      /* Without incrementing length by one in the malloc and
+       * adding the '/0' to the end, printing wordTyped after
+       * deleting characters from it does not work.
+       * Jonas 05/16
+       */
+      wordTyped[length] = '\0';
       while (i != 0) {
         wordTyped[i-1] = word->letter;
-        //printw(" letter %d: %c ", i, wordTyped[i-1]);
-        //printw("i: %d ", i);
         i--;
         word = ll_pop(word);
-        //printw("word: %s", wordTyped);
       }
-      //printw("word: %s", wordTyped);
       autocomplete(wordTyped, length);
       length = 0;
     }
 
-    // Jonas 05.16: Implement delete key
+    /* Jonas 05.16: Implement delete key
+     * Known bug: as of right now, we can only
+     * delete one word at a time - the linked 
+     * list only stores one word at a time, so
+     * therefore we cannot access the prior word
+     * after deleting the most recently typed one.
+     * We'll have to change the word storage mechanism,
+     * so I'm leaving that to Sprint 4
+     */
 
     if (c == 127 || c == 8) { 
       int x, y;
@@ -150,13 +160,7 @@ int lets_tab_builtin(char **args)
       move(y, x);
       clrtobot();
       refresh();
-      //printw(" ");
-      //getyx(stdscr, y, x);
-      //x--;
-      //move(y, x);
-      //refresh();
       word = ll_pop(word);
-      //printw(" last letter: %c ", word->letter);
       length--;
     }
     cbreak();
