@@ -26,9 +26,14 @@
 char					**g_envv;
 
 /*
+** src/bash_mode.c
+*/
+int batch_mode_builtin(char **command);
+
+/*
 ** src/lets_tab.c
 */
-int lets_tab_builtin(char **comand);
+int lets_tab_builtin(char **command);
 
 /*
 ** src/hello_cs220.c
