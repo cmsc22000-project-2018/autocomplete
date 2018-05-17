@@ -158,6 +158,8 @@ int batch_mode_builtin(char **args)
 	}
     if (fileSet) {
 		    char* currentPrefix = malloc(64 * sizeof(char)); //Temporary constant value
+        //For a cleaner look in shell
+				ft_putstr("\n");
 		    while (fgets(currentPrefix, 64, prefixFile)) {   //Temporary constant value
 		    		currentPrefix[strlen(currentPrefix) - 1] = '\0';
 		    		print_children(showWords, nWords, currentPrefix, dictionary);

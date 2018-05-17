@@ -199,7 +199,7 @@ int				main(int ac, char **av, char **envv)
 		display_prompt_msg();
                 if (firstCommand == 0) {
                   input = malloc(sizeof(char) * 13);
-                  strcpy(input, "autocomplete");
+                  strcpy(input, "interactive");
                   input = parse_input(input);
                   firstCommand+=2;
                 } else if (firstCommand == 1) {
