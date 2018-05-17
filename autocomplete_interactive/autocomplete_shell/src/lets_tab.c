@@ -6,6 +6,7 @@ Program which implements a tab-based command
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 #include "minishell.h"
 #include "ll.h"
 
@@ -46,14 +47,12 @@ struct word {
 
 void autocomplete(char *word, int length)
 {
-
-
   int x, y;
 	int x_org, y_org; //used for clearing screen
   getyx(stdscr, y, x);
 	getyx(stdscr, y_org, x_org); //used for clearing screen
 
-  printw("\nHere are suggestions to automplete \"%s\"\n", word);
+  printw("\nHere are suggestions to automplete %s \n", word);
   int b;
   for (b = 0; b < length; b++)
     printw("%d: %s%c\n", b, word, b+97);
@@ -112,7 +111,8 @@ int lets_tab_builtin(char **args)
   cbreak();
   noecho();
   while('~' != (c = getch())) {
-    if (c != 9) {
+    
+    if (c != 9 && c != 127 && c != 8) {
       printw("%c", c);
       word = ll_new(word);
       word->letter = c;
@@ -122,20 +122,43 @@ int lets_tab_builtin(char **args)
     if (c == 32) {
       length = 0;
       word = NULL;
-      word = ll_new(word);
     }
+
     if (c == 9) {
-      char *wordTyped = malloc(sizeof(char)*length);
+      char *wordTyped = malloc(sizeof(char)*(length));
+      //printw("wordTyped: %s", wordTyped);
       int i = length;
       while (i != 0) {
         wordTyped[i-1] = word->letter;
+        //printw(" letter %d: %c ", i, wordTyped[i-1]);
+        //printw("i: %d ", i);
         i--;
         word = ll_pop(word);
+        //printw("word: %s", wordTyped);
       }
+      //printw("word: %s", wordTyped);
       autocomplete(wordTyped, length);
       length = 0;
     }
 
+    // Jonas 05.16: Implement delete key
+
+    if (c == 127 || c == 8) { 
+      int x, y;
+      getyx(stdscr, y, x);
+      x--;
+      move(y, x);
+      clrtobot();
+      refresh();
+      //printw(" ");
+      //getyx(stdscr, y, x);
+      //x--;
+      //move(y, x);
+      //refresh();
+      word = ll_pop(word);
+      //printw(" last letter: %c ", word->letter);
+      length--;
+    }
     cbreak();
   }
   clear();
