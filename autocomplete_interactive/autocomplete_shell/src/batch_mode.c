@@ -84,29 +84,34 @@ void print_children(int b, int n, char* s, char* dict_file)
     //This should be corrected by a 'real' get_children which simply returns pointers to its
     //own data which is freed elsewhere
 
-    printf("%s", prefix->prefix);
-    printf(": %d", prefix->nComps);
+    ft_putstr(prefix->prefix);
+    ft_putstr(": ");
+		char* temp_string = malloc(64 * sizeof(char));
+		sprintf(temp_string,"%d",prefix->nComps);
+		ft_putstr(temp_string);
+		free(temp_string);
 
     if (b) {
-        printf(" [");
+			  ft_putstr(",");
+        ft_putstr(" [");
         for (int i = 0; i < prefix->nComps && i < n; i++) {
-            printf("%s", prefix->completions[i]);
+            ft_putstr(prefix->completions[i]);
             if (i != prefix->nComps - 1) {
-                printf(", ");
+                ft_putstr(", ");
             }
             if (i == n - 1 && n < prefix->nComps) {
-                printf("...");
+                ft_putstr("...");
             }
         }
         //Prevent [] display with n = 0
         if (n == 0) {
-            printf("...");
+            ft_putstr("...");
         }
 
-        printf("]\n");
+        ft_putstr("]\n");
     }
     else {
-        printf("\n");
+        ft_putstr("\n");
     }
 
     prefix_free(prefix);
@@ -119,13 +124,14 @@ int batch_mode_builtin(char **args)
 	int nWords = SHOWNWORDS;
 	char* dictionary; //Once we can, should be initialized to the redis dictionary
 	FILE* prefixFile;
+	int fileSet = 0;
 
 	/*Parse input instructions into global variables.
 		Note that args[0] is ./autocomplete itself, so it is ignored.
 		Currently uses asserts to avoid reading missing arguments,
 		we may want to make this more robust later.
 	*/
-	for (int i = 1; args[i] != NULL; i+=2) {
+	for (int i = 0; args[i] != NULL; i+=2) {
 			if (!strncmp(args[i], "-w", 2)) {
 					assert(args[i + 1] != NULL);
 					showWords = atoi(args[i + 1]);
@@ -143,19 +149,21 @@ int batch_mode_builtin(char **args)
 			if (!strncmp(args[i], "-f", 2)) {
 					assert(args[i + 1] != NULL);
 					prefixFile = fopen(args[i + 1], "r");
+					fileSet = 1;
 			}
 			if (!strncmp(args[i], "-o", 2)) {
 					assert(args[i + 1] != NULL);
 					freopen(args[i + 1], "w", stdout); //Sets stdout to be the file instead of the terminal
 			}
 	}
-
-		char* currentPrefix = malloc(64 * sizeof(char)); //Temporary constant value
-		while (fgets(currentPrefix, 64, prefixFile)) {   //Temporary constant value
-				currentPrefix[strlen(currentPrefix) - 1] = '\0';
-				print_children(showWords, nWords, currentPrefix, dictionary);
-		}
-		free(currentPrefix);
+    if (fileSet) {
+		    char* currentPrefix = malloc(64 * sizeof(char)); //Temporary constant value
+		    while (fgets(currentPrefix, 64, prefixFile)) {   //Temporary constant value
+		    		currentPrefix[strlen(currentPrefix) - 1] = '\0';
+		    		print_children(showWords, nWords, currentPrefix, dictionary);
+		    }
+	    	free(currentPrefix);
+    }
 
 	//Currently there are no fcloses because of valgrind issues, should probably be added though
 
