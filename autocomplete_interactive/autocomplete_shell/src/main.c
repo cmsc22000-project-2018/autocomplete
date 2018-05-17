@@ -143,6 +143,30 @@ int				exec_commands(char **commands)
 	return (ret);
 }
 
+/* Concatenates array of strings into single string */
+
+char *concatenate(size_t size, char *array[size], const char *joint){
+    size_t jlen, lens[size];
+    size_t i, total_size = (size-1) * (jlen=strlen(joint)) + 1;
+    char *result, *p;
+
+
+    for(i=0;i<size;++i){
+        total_size += (lens[i]=strlen(array[i]));
+    }
+    p = result = malloc(total_size);
+    for(i=0;i<size;++i){
+        memcpy(p, array[i], lens[i]);
+        p += lens[i];
+        if(i<size-1){
+            memcpy(p, joint, jlen);
+            p += jlen;
+        }
+    }
+    *p = '\0';
+    return result;
+}
+
 /*
 ** Initializes minishell
 **
@@ -157,7 +181,17 @@ int				main(int ac, char **av, char **envv)
 	char	*input;
 	int		ret;
 	char	**commands;
-        int firstCommand = 0;
+  int firstCommand = 0;
+
+  //Batch mode
+	if (!strncmp(av[1], "-i", 2)) {
+			firstCommand = 0;
+			//This currently doesn't trigger anything in particular, eventually this flag will be required
+	}
+	//Interactive mode
+	else if (!strncmp(av[1], "-b", 2)) {
+			firstCommand = 1;
+	}
 
 	init_envv(ac, av, envv);
 	while (1)
@@ -167,10 +201,19 @@ int				main(int ac, char **av, char **envv)
                   input = malloc(sizeof(char) * 13);
                   strcpy(input, "autocomplete");
                   input = parse_input(input);
-                  firstCommand++;
-                } else {
+                  firstCommand+=2;
+                } else if (firstCommand == 1) {
+									char* batch = malloc(sizeof(char) * 6);
+                  strcpy(batch, "batch");
+									char* arguments = concatenate(ac - 2, &(av[2]), " ");
+									input = malloc(strlen(batch) + strlen(arguments) + 1);
+									strcat(input, batch);
+									strcat(input, " ");
+                  input = parse_input(strcat(input, arguments));
+                  firstCommand+=2;
+								} else {
                   signal(SIGINT, signal_handler);
-                  get_input(&input); 
+                  get_input(&input);
                 }
 		if (ft_isemptystr(input, 1))
 		{
