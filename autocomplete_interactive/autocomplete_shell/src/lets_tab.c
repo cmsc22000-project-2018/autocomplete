@@ -18,22 +18,19 @@ Checks if the input has two or more arguments and acts accordingly
 @param args The list of arguments to check
 @return 0 if there is no second argument, 1 if there is
 */
-static int has_four_args(char **args)
+static int has_four_args(char **args, n)
 {
-	if (args[1])
-	{
-		if (args[2])
-		{
-			if (args[3])
-      {
-        if (args[4])
-        {
-          ft_putendl("hello: too many arguments");
-          return (1);
-        }
-      }
-		}
-	}
+	int i;
+  for (i = 1; i <= n; i++)
+  {
+    if (i == n) {
+      ft_putendl("hello: too many arguments");
+      return (1);
+    }
+    if (!args[i])
+      break;
+  }
+
 	return (0);
 }
 
@@ -112,7 +109,7 @@ void autocomplete(char *word, char *dict, int length)
 // command to enter interactive autocomplete mode
 int lets_tab_builtin(char **args)
 {
-  if (has_four_args(args) == 1)
+  if (has_n_args(args, 2) == 1)
     return(1);
   char *dict = args[0];
   struct word *word = NULL; //list
