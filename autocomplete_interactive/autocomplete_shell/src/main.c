@@ -197,32 +197,29 @@ int				main(int ac, char **av, char **envv)
 	while (1)
 	{
 		display_prompt_msg();
-                if (firstCommand == 0) {
-                  char* interactive = malloc(sizeof(char) * 13);
-                  strcpy(interactive, "interactive");
-									char* arguments = concatenate(ac - 2, &(av[2]), " ");
-									input = malloc(strlen(interactive) + strlen(arguments) + 1);
-									strcat(input, interactive);
-									strcat(input, " ");
-                  input = parse_input(strcat(input, arguments));
-                  firstCommand+=2;
-                  //input = malloc(sizeof(char) * 13);
-                  //strcpy(input, "interactive");
-                  //input = parse_input(input);
-                  //firstCommand+=2;
-                } else if (firstCommand == 1) {
-									char* batch = malloc(sizeof(char) * 6);
-                  strcpy(batch, "batch");
-									char* arguments = concatenate(ac - 2, &(av[2]), " ");
-									input = malloc(strlen(batch) + strlen(arguments) + 1);
-									strcat(input, batch);
-									strcat(input, " ");
-                  input = parse_input(strcat(input, arguments));
-                  firstCommand+=2;
-								} else {
-                  signal(SIGINT, signal_handler);
-                  get_input(&input);
-                }
+    if (firstCommand == 0) {
+      // Jonas 05.17: Edited to take in more than one argument
+      char* interactive = malloc(sizeof(char) * 13);
+      strcpy(interactive, "interactive");
+			char* arguments = concatenate(ac - 2, &(av[2]), " ");
+			input = malloc(strlen(interactive) + strlen(arguments) + 1);
+			strcat(input, interactive);
+			strcat(input, " ");
+      input = parse_input(strcat(input, arguments));
+      firstCommand+=2;
+    } else if (firstCommand == 1) {
+			char* batch = malloc(sizeof(char) * 6);
+      strcpy(batch, "batch");
+			char* arguments = concatenate(ac - 2, &(av[2]), " ");
+			input = malloc(strlen(batch) + strlen(arguments) + 1);
+			strcat(input, batch);
+			strcat(input, " ");
+      input = parse_input(strcat(input, arguments));
+      firstCommand+=2;
+		} else {
+      signal(SIGINT, signal_handler);
+      get_input(&input);
+    }
 		if (ft_isemptystr(input, 1))
 		{
 			free(input);
