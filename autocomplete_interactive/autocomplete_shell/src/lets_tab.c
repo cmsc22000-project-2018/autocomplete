@@ -18,7 +18,7 @@ Checks if the input has two or more arguments and acts accordingly
 @param args The list of arguments to check
 @return 0 if there is no second argument, 1 if there is
 */
-static int has_n_args(char **args, n)
+static int has_n_args(char **args, int n)
 {
 	int i;
   for (i = 1; i <= n; i++)
