@@ -51,7 +51,6 @@ int dict_init(dict_t *d);
  */
 int dict_free(dict_t *d);
 
-
 /*
  * Checks if a string is contained in a dictionary
  *

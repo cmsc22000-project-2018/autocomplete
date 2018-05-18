@@ -183,12 +183,12 @@ int				main(int ac, char **av, char **envv)
 	char	**commands;
   int firstCommand = 0;
 
-  //Batch mode
+  //Interactive mode
 	if (!strncmp(av[1], "-i", 2)) {
 			firstCommand = 0;
 			//This currently doesn't trigger anything in particular, eventually this flag will be required
 	}
-	//Interactive mode
+	//Batch mode
 	else if (!strncmp(av[1], "-b", 2)) {
 			firstCommand = 1;
 	}
@@ -198,10 +198,18 @@ int				main(int ac, char **av, char **envv)
 	{
 		display_prompt_msg();
                 if (firstCommand == 0) {
-                  input = malloc(sizeof(char) * 13);
-                  strcpy(input, "interactive");
-                  input = parse_input(input);
+                  char* interactive = malloc(sizeof(char) * 13);
+                  strcpy(interactive, "interactive");
+									char* arguments = concatenate(ac - 2, &(av[2]), " ");
+									input = malloc(strlen(interactive) + strlen(arguments) + 1);
+									strcat(input, interactive);
+									strcat(input, " ");
+                  input = parse_input(strcat(input, arguments));
                   firstCommand+=2;
+                  //input = malloc(sizeof(char) * 13);
+                  //strcpy(input, "interactive");
+                  //input = parse_input(input);
+                  //firstCommand+=2;
                 } else if (firstCommand == 1) {
 									char* batch = malloc(sizeof(char) * 6);
                   strcpy(batch, "batch");
