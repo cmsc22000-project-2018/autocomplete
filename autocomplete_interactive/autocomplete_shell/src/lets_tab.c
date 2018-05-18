@@ -34,14 +34,6 @@ struct word {
   char letter;
 };
 
-struct lengths {
-  int length;
-};
-
-struct document {
-  struct word *word;
-};
-
 //where autocomplete would go
 
 /* Jonas 05.06: eventually, we're going to have to change
@@ -110,72 +102,47 @@ void autocomplete(char *word, int length)
 // command to enter interactive autocomplete mode
 int lets_tab_builtin(char **args)
 {
+  int lets_tab_builtin(char **args)
+{
   if (has_two_args(args) == 1)
     return(1);
-  struct word *curr_word = NULL; //list
-  struct word *word_0 = NULL;
-  word_0 = ll_new(word_0);
-  struct document *doc = NULL;
-  doc = ll_new(doc);
-  doc->word = curr_word;
-  struct lengths *lengths = NULL;
-  lengths = ll_new(lengths);
-  lengths->length = 0;
+  struct word *word = NULL; //list
+  int length = 0;
   int c;
   initscr();    // Start Curses Mode
   cbreak();
   noecho();
   while('~' != (c = getch())) {
+    
     // Doesn't print tab, bkspace, or del
     if (c != 9 && c != 127 && c != 8) {
       printw("%c", c);
-      curr_word = ll_new(curr_word);
-      curr_word->letter = c;
-      lengths->length++;      
+      word = ll_new(word);
+      word->letter = c;
+      length++;
     }
 
     if (c == 32) {
-      curr_word = ll_pop(curr_word);
-      lengths->length--;
-      int total = lengths->length;
-      char *currWord = malloc(sizeof(char)*(total));
-      int j = total - 1;
-      while (j != 0) {
-        currWord[j-1] = curr_word->letter;
-        j--;
-        curr_word = ll_pop(curr_word);
-      }
-      j = 0;
-      while (j != total-1) {
-        word_0->letter = currWord[j];
-        word_0 = ll_new(word_0);
-        j++;
-      }
-      doc->word = word_0;
-      doc = ll_new(doc);
-      curr_word = NULL;
-      doc->word = curr_word;
-      lengths = ll_new(lengths);
-      lengths->length = 0;
+      length = 0;
+      word = NULL;
     }
 
     if (c == 9) {
-      int len = lengths->length;
-      char *wordTyped = malloc(sizeof(char)*(len+1));
-      int i = len;
+      char *wordTyped = malloc(sizeof(char)*(length+1));
+      int i = length;
       /* Without incrementing length by one in the malloc and
        * adding the '/0' to the end, printing wordTyped after
        * deleting characters from it does not work.
        * Jonas 05/16
        */
-      wordTyped[len] = '\0';
+      wordTyped[length] = '\0';
       while (i != 0) {
-        wordTyped[i-1] = curr_word->letter;
+        wordTyped[i-1] = word->letter;
         i--;
-        curr_word = ll_pop(curr_word);
+        word = ll_pop(word);
       }
-      autocomplete(wordTyped, len);
-      lengths->length = 0;
+      autocomplete(wordTyped, length);
+      length = 0;
     }
 
     /* Jonas 05.16: Implement delete key
@@ -195,17 +162,13 @@ int lets_tab_builtin(char **args)
       move(y, x);
       clrtobot();
       refresh();
-      curr_word = ll_pop(curr_word);
-      lengths->length--;
-      if (lengths->length == 0) {
-        lengths = ll_pop(lengths);
-        doc = ll_pop(doc);
-        curr_word = doc->word;
-      }
+      word = ll_pop(word);
+      length--;
     }
     cbreak();
   }
   clear();
   endwin();
   return(1);
+}
 }
