@@ -77,7 +77,12 @@ void autocomplete(char *word, char *dict, int length, int maxCompletions)
   // some number that was inputed
   int num_children = num_children_in_dict(word, dict);
   int i;
-  for (i = 0; i < maxCompletions; i++)
+	int childrenToDisplay;
+	if (maxCompletions > num_children)
+	  childrenToDisplay = num_children;
+	else
+	  childrenToDisplay = maxCompletions;
+  for (i = 0; i < childrenToDisplay; i++)
     printw("%d: %s\n", i, children[i]);
 	if (num_children > maxCompletions)
 	  printw("Printed [%d] completions out of [%d] available\n", maxCompletions, num_children);
@@ -101,7 +106,7 @@ void autocomplete(char *word, char *dict, int length, int maxCompletions)
   // tab through options, hit enter to select
   while(10 != (c = getch())) {
 		if(c == 9) {
-			if (moved < num_children) {
+			if (moved < childrenToDisplay) {
 				y++;
 				moved++;
 			} else {
@@ -123,6 +128,10 @@ void autocomplete(char *word, char *dict, int length, int maxCompletions)
 // command to enter interactive autocomplete mode
 int lets_tab_builtin(char **args)
 {
+
+  int amountOfArgs;
+	for (amountOfArgs = 0; args[amountOfArgs] != NULL; amountOfArgs++);
+
   if (has_n_args(args, 2) == 1) {} //does nothing for now
   struct word *word = NULL; //list
 
@@ -182,8 +191,9 @@ int lets_tab_builtin(char **args)
         word = ll_pop(word);
     }
 		  int maxCompletions = -1;
-		  if(args[2] != NULL)
-			  maxCompletions = atoi(args[2]);
+		  if (amountOfArgs >= 3)
+				if(args[2] != NULL)
+				  maxCompletions = atoi(args[2]);
 
       autocomplete(wordTyped, dict, length, maxCompletions);
       length = 0;
