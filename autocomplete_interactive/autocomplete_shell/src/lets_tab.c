@@ -13,7 +13,6 @@ Program which implements a tab-based command
 
 #define DEFAULT_DICTIONARY_FILE "./src/test_dict.txt"
 
-
 /*
 Checks if the input has two or more arguments and acts accordingly
 
