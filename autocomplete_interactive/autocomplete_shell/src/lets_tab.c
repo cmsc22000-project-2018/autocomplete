@@ -53,13 +53,17 @@ struct word {
 
 void autocomplete(char *word, char *dict, int length)
 {
+	int len = strlen(dict);
+  char *fileType = &dict[len-4];
+	if (strncmp(fileType, ".txt", 4) != 0 || dict == NULL)
+	  dict = "./src/test_dict.txt";
   int x, y;
 	int x_org, y_org; //used for clearing screen
   getyx(stdscr, y, x);
 	getyx(stdscr, y_org, x_org); //used for clearing screen
 
   printw("\nHere are suggestions to automplete \"%s\"\n", word);
-  
+
   char **children = get_children_in_dict(word, dict);
   // In order to restrict the number of options printed, change "num_children" to
   // some number that was inputed
@@ -109,10 +113,9 @@ void autocomplete(char *word, char *dict, int length)
 // command to enter interactive autocomplete mode
 int lets_tab_builtin(char **args)
 {
-  if (has_n_args(args, 2) == 1)
-    return(1);
-  char *dict = args[0];
+  if (has_n_args(args, 2) == 1) {} //does nothing for now
   struct word *word = NULL; //list
+	char *dict = args[0];
   int length = 0;
   int c;
   initscr();    // Start Curses Mode
