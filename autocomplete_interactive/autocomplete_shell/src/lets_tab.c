@@ -115,12 +115,13 @@ int lets_tab_builtin(char **args)
     // Doesn't print tab, bkspace, or del
     if (c != 9 && c != 127 && c != 8) {
       printw("%c", c);
-      word = ll_new(word);
-      word->letter = c;
-      length++;
+      if (c != 10 && c != 11 && c != 13) {
+        word = ll_new(word);
+        word->letter = c;
+        length++;
+      }
     }
-
-    if (c == 32) {
+    if (c == 10 || c == 11 || c == 13 || c == 32) {
       length = 0;
       word = NULL;
     }
