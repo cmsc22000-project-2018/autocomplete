@@ -183,8 +183,14 @@ int				main(int ac, char **av, char **envv)
 	char	**commands;
   int firstCommand = 0;
 
-  //Interactive mode
-	if (!strncmp(av[1], "-i", 2)) {
+  if (ac == 1) {
+		ac = 3;
+		char *defaultArgs[ac];
+		defaultArgs[0] = av[0];
+		defaultArgs[1] = "-i";
+		av = defaultArgs;
+		firstCommand = 0;
+	} else if (!strncmp(av[1], "-i", 2)) {
 			firstCommand = 0;
 			//This currently doesn't trigger anything in particular, eventually this flag will be required
 	}
