@@ -6,6 +6,7 @@ Program which implements a tab-based command
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 #include "minishell.h"
 #include "ll.h"
 #include "batch_mode.h"
@@ -122,7 +123,9 @@ int lets_tab_builtin(char **args)
   cbreak();
   noecho();
   while('~' != (c = getch())) {
-    if (c != 9) {
+
+    // Doesn't print tab, bkspace, or del
+    if (c != 9 && c != 127 && c != 8) {
       printw("%c", c);
       word = ll_new(word);
       word->letter = c;
@@ -131,12 +134,18 @@ int lets_tab_builtin(char **args)
     if (c == 32) {
       length = 0;
       word = NULL;
-      word = ll_new(word);
     }
+
     if (c == 9) {
       char *wordTyped = malloc(sizeof(char)*(length+1));
       wordTyped[length] = '\0'; // Without this, there are rando characters at the end of words
       int i = length;
+      /* Without incrementing length by one in the malloc and
+       * adding the '/0' to the end, printing wordTyped after
+       * deleting characters from it does not work.
+       * Jonas 05/16
+       */
+      wordTyped[length] = '\0';
       while (i != 0) {
         wordTyped[i-1] = word->letter;
         i--;
