@@ -102,8 +102,6 @@ void autocomplete(char *word, int length)
 // command to enter interactive autocomplete mode
 int lets_tab_builtin(char **args)
 {
-  int lets_tab_builtin(char **args)
-{
   if (has_two_args(args) == 1)
     return(1);
   struct word *word = NULL; //list
@@ -170,5 +168,4 @@ int lets_tab_builtin(char **args)
   clear();
   endwin();
   return(1);
-}
 }
