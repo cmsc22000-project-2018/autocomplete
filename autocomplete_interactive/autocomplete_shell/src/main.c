@@ -191,6 +191,13 @@ int				main(int ac, char **av, char **envv)
 		av = defaultArgs;
 		firstCommand = 0;
 	} else if (!strncmp(av[1], "-i", 2)) {
+		  if (av[2] == NULL) {
+				ac = 3;
+				char *defaultArgs[ac];
+				defaultArgs[0] = av[0];
+				defaultArgs[1] = "-i";
+				av = defaultArgs;
+			}
 			firstCommand = 0;
 			//This currently doesn't trigger anything in particular, eventually this flag will be required
 	}

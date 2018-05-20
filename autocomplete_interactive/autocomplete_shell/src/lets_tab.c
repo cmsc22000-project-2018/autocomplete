@@ -11,6 +11,8 @@ Program which implements a tab-based command
 #include "batch_mode.h"
 #include "dictionary.h"
 
+#define DEFAULT_DICTIONARY_FILE "./src/test_dict.txt"
+
 
 /*
 Checks if the input has two or more arguments and acts accordingly
@@ -53,10 +55,15 @@ struct word {
 
 void autocomplete(char *word, char *dict, int length)
 {
+
+	if (dict == NULL)
+	   dict = DEFAULT_DICTIONARY_FILE;
 	int len = strlen(dict);
   char *fileType = &dict[len-4];
-	if (strncmp(fileType, ".txt", 4) != 0 || dict == NULL)
-	  dict = "./src/test_dict.txt";
+	if (strncmp(fileType, ".txt", 4) != 0)
+	  dict = DEFAULT_DICTIONARY_FILE;
+
+
   int x, y;
 	int x_org, y_org; //used for clearing screen
   getyx(stdscr, y, x);
@@ -115,7 +122,28 @@ int lets_tab_builtin(char **args)
 {
   if (has_n_args(args, 2) == 1) {} //does nothing for now
   struct word *word = NULL; //list
-	char *dict = args[0];
+
+	//bool server = false;
+	char *dict;
+
+	if (strncmp(args[0], "-s", 2) == 0) {
+    dict = "./src/test_prefixes.txt"; //placeholder for server location of dictionary
+		//server = true;
+	} else {
+		dict = args[1];
+	}
+
+
+	/*
+	char *flag = args[1];
+	if (strncmp(flag, "-s", 2) == 0) {
+	  //placeholder for server
+		dict = args[2];
+	} else {
+		dict = args[2];
+	}
+	*/
+
   int length = 0;
   int c;
   initscr();    // Start Curses Mode
