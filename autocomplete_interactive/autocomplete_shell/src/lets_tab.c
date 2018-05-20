@@ -13,6 +13,7 @@ Program which implements a tab-based command
 #include "dictionary.h"
 
 #define DEFAULT_DICTIONARY_FILE "./src/test_dict.txt"
+#define DEFAULT_AMT_COMPLETIONS 10
 
 /*
 Checks if the input has two or more arguments and acts accordingly
@@ -53,16 +54,16 @@ struct word {
 // GUI works by tabbing through the options and the cursor cycles back to the frist when you go over. hit ENTER to select.
 
 
-void autocomplete(char *word, char *dict, int length)
+void autocomplete(char *word, char *dict, int length, int maxCompletions)
 {
-
+  if (maxCompletions == -1)
+	  maxCompletions = DEFAULT_AMT_COMPLETIONS;
 	if (dict == NULL)
 	   dict = DEFAULT_DICTIONARY_FILE;
 	int len = strlen(dict);
   char *fileType = &dict[len-4];
 	if (strncmp(fileType, ".txt", 4) != 0)
 	  dict = DEFAULT_DICTIONARY_FILE;
-
 
   int x, y;
 	int x_org, y_org; //used for clearing screen
@@ -76,8 +77,10 @@ void autocomplete(char *word, char *dict, int length)
   // some number that was inputed
   int num_children = num_children_in_dict(word, dict);
   int i;
-  for (i = 0; i < num_children; i++)
+  for (i = 0; i < maxCompletions; i++)
     printw("%d: %s\n", i, children[i]);
+	if (num_children > maxCompletions)
+	  printw("Printed [%d] completions out of [%d] available\n", maxCompletions, num_children);
 
 	//print this after autocomplete options to make tabbing less messy
 	//if (length > 10) {
@@ -178,7 +181,11 @@ int lets_tab_builtin(char **args)
         i--;
         word = ll_pop(word);
     }
-      autocomplete(wordTyped, dict, length);
+		  int maxCompletions = -1;
+		  if(args[2] != NULL)
+			  maxCompletions = atoi(args[2]);
+
+      autocomplete(wordTyped, dict, length, maxCompletions);
       length = 0;
     }
 
