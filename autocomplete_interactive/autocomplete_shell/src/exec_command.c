@@ -63,8 +63,10 @@ static int		check_builtins(char **command)
 		return (unsetenv_builtin(command + 1));
 	else if (ft_strequ(command[0], "hello"))
 	  return (hello_builtin(command + 1));
-	else if (ft_strequ(command[0], "autocomplete"))
+	else if (ft_strequ(command[0], "interactive"))
 	  return (lets_tab_builtin(command + 1));
+	else if (ft_strequ(command[0], "batch"))
+	  return (batch_mode_builtin(command + 1));
 	else if (ft_strequ(command[0], "env"))
 	{
 		print_env();
