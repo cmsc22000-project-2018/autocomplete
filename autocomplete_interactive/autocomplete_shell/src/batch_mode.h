@@ -10,6 +10,9 @@
 // Given a prefix and a dictionary file, returns all valid children
 char** get_children_in_dict(char* s, char* dict_file);
 
+// Given a prefix and a dictionary file, returns a count of valid children
+int num_children_in_dict(char* s, char* dict_file);
+
 // Prints the batch output, including n words if b.
 void print_children(int b, int n, char* s, char* dict_file);
 

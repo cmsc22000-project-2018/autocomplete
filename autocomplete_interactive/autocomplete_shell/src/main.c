@@ -183,12 +183,25 @@ int				main(int ac, char **av, char **envv)
 	char	**commands;
   int firstCommand = 0;
 
-  //Batch mode
-	if (!strncmp(av[1], "-i", 2)) {
+  if (ac == 1) {
+		ac = 3;
+		char *defaultArgs[ac];
+		defaultArgs[0] = av[0];
+		defaultArgs[1] = "-i";
+		av = defaultArgs;
+		firstCommand = 0;
+	} else if (!strncmp(av[1], "-i", 2)) {
+		  if (av[2] == NULL) {
+				ac = 3;
+				char *defaultArgs[ac];
+				defaultArgs[0] = av[0];
+				defaultArgs[1] = "-i";
+				av = defaultArgs;
+			}
 			firstCommand = 0;
 			//This currently doesn't trigger anything in particular, eventually this flag will be required
 	}
-	//Interactive mode
+	//Batch mode
 	else if (!strncmp(av[1], "-b", 2)) {
 			firstCommand = 1;
 	}
@@ -197,24 +210,29 @@ int				main(int ac, char **av, char **envv)
 	while (1)
 	{
 		display_prompt_msg();
-                if (firstCommand == 0) {
-                  input = malloc(sizeof(char) * 13);
-                  strcpy(input, "interactive");
-                  input = parse_input(input);
-                  firstCommand+=2;
-                } else if (firstCommand == 1) {
-									char* batch = malloc(sizeof(char) * 6);
-                  strcpy(batch, "batch");
-									char* arguments = concatenate(ac - 2, &(av[2]), " ");
-									input = malloc(strlen(batch) + strlen(arguments) + 1);
-									strcat(input, batch);
-									strcat(input, " ");
-                  input = parse_input(strcat(input, arguments));
-                  firstCommand+=2;
-								} else {
-                  signal(SIGINT, signal_handler);
-                  get_input(&input);
-                }
+    if (firstCommand == 0) {
+      // Jonas 05.17: Edited to take in more than one argument
+      char* interactive = malloc(sizeof(char) * 13);
+      strcpy(interactive, "interactive");
+			char* arguments = concatenate(ac - 2, &(av[2]), " ");
+			input = malloc(strlen(interactive) + strlen(arguments) + 1);
+			strcat(input, interactive);
+			strcat(input, " ");
+      input = parse_input(strcat(input, arguments));
+      firstCommand+=2;
+    } else if (firstCommand == 1) {
+			char* batch = malloc(sizeof(char) * 6);
+      strcpy(batch, "batch");
+			char* arguments = concatenate(ac - 2, &(av[2]), " ");
+			input = malloc(strlen(batch) + strlen(arguments) + 1);
+			strcat(input, batch);
+			strcat(input, " ");
+      input = parse_input(strcat(input, arguments));
+      firstCommand+=2;
+		} else {
+      signal(SIGINT, signal_handler);
+      get_input(&input);
+    }
 		if (ft_isemptystr(input, 1))
 		{
 			free(input);

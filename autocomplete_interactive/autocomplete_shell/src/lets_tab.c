@@ -9,6 +9,10 @@ Program which implements a tab-based command
 #include <string.h>
 #include "minishell.h"
 #include "ll.h"
+#include "batch_mode.h"
+#include "dictionary.h"
+
+#define DEFAULT_DICTIONARY_FILE "./src/test_dict.txt"
 
 /*
 Checks if the input has two or more arguments and acts accordingly
@@ -16,16 +20,19 @@ Checks if the input has two or more arguments and acts accordingly
 @param args The list of arguments to check
 @return 0 if there is no second argument, 1 if there is
 */
-static int has_two_args(char **args)
+static int has_n_args(char **args, int n)
 {
-	if (args[1])
-	{
-		if (args[2])
-		{
-			ft_putendl("hello: too many arguments");
-			return (1);
-		}
-	}
+	int i;
+  for (i = 1; i <= n; i++)
+  {
+    if (i == n) {
+      ft_putendl("hello: too many arguments");
+      return (1);
+    }
+    if (!args[i])
+      break;
+  }
+
 	return (0);
 }
 
@@ -45,24 +52,38 @@ struct word {
 // Note that Shift-Tab is impossible in the ncurses C library as Shift-Tab is not registered differently from TAB
 // GUI works by tabbing through the options and the cursor cycles back to the frist when you go over. hit ENTER to select.
 
-void autocomplete(char *word, int length)
+
+void autocomplete(char *word, char *dict, int length)
 {
+
+	if (dict == NULL)
+	   dict = DEFAULT_DICTIONARY_FILE;
+	int len = strlen(dict);
+  char *fileType = &dict[len-4];
+	if (strncmp(fileType, ".txt", 4) != 0)
+	  dict = DEFAULT_DICTIONARY_FILE;
+
+
   int x, y;
 	int x_org, y_org; //used for clearing screen
   getyx(stdscr, y, x);
 	getyx(stdscr, y_org, x_org); //used for clearing screen
 
-  printw("\nHere are suggestions to automplete %s \n", word);
-  int b;
-  for (b = 0; b < length; b++)
-    printw("%d: %s%c\n", b, word, b+97);
-  printw("Tab through the options and hit enter on the correct one");
+  printw("\nHere are suggestions to automplete \"%s\"\n", word);
+
+  char **children = get_children_in_dict(word, dict);
+  // In order to restrict the number of options printed, change "num_children" to
+  // some number that was inputed
+  int num_children = num_children_in_dict(word, dict);
+  int i;
+  for (i = 0; i < num_children; i++)
+    printw("%d: %s\n", i, children[i]);
 
 	//print this after autocomplete options to make tabbing less messy
-	if (length > 10) {
-    printw("Only the first ten possibilities displayed\n");
-    length = 10;
-  }
+	//if (length > 10) {
+  //  printw("Only the first ten possibilities displayed\n");
+  //  length = 10;
+  //}
 
   int c;
 	y++;
@@ -74,12 +95,10 @@ void autocomplete(char *word, int length)
 	y++;
 	moved++;
 	wmove(stdscr, y, x);
-	//////////////////
-
   // tab through options, hit enter to select
   while(10 != (c = getch())) {
-		if(c == 9){
-			if (moved < length) {
+		if(c == 9) {
+			if (moved < num_children) {
 				y++;
 				moved++;
 			} else {
@@ -92,26 +111,46 @@ void autocomplete(char *word, int length)
 	c = mvwinch(stdscr, y, x);
 
   //clear autocomplete portion of screen
-  wmove(stdscr, y_org, x_org);
+  wmove(stdscr, y_org, (x_org-length)); // prints over the typed word
   wrefresh(stdscr);
-  // Temporary print, when we get the tries we'll figure
-  printw("%c ", c+49);
+  printw("%s ", children[moved-1]);
   clrtobot();
 }
 
 // command to enter interactive autocomplete mode
 int lets_tab_builtin(char **args)
 {
-  if (has_two_args(args) == 1)
-    return(1);
+  if (has_n_args(args, 2) == 1) {} //does nothing for now
   struct word *word = NULL; //list
+
+	//bool server = false;
+	char *dict;
+
+	if (strncmp(args[0], "-s", 2) == 0) {
+    dict = "./src/test_prefixes.txt"; //placeholder for server location of dictionary
+		//server = true;
+	} else {
+		dict = args[1];
+	}
+
+
+	/*
+	char *flag = args[1];
+	if (strncmp(flag, "-s", 2) == 0) {
+	  //placeholder for server
+		dict = args[2];
+	} else {
+		dict = args[2];
+	}
+	*/
+
   int length = 0;
   int c;
   initscr();    // Start Curses Mode
   cbreak();
   noecho();
   while('~' != (c = getch())) {
-    
+
     // Doesn't print tab, bkspace, or del
     if (c != 9 && c != 127 && c != 8) {
       printw("%c", c);
@@ -119,7 +158,6 @@ int lets_tab_builtin(char **args)
       word->letter = c;
       length++;
     }
-
     if (c == 32) {
       length = 0;
       word = NULL;
@@ -127,6 +165,7 @@ int lets_tab_builtin(char **args)
 
     if (c == 9) {
       char *wordTyped = malloc(sizeof(char)*(length+1));
+      wordTyped[length] = '\0'; // Without this, there are rando characters at the end of words
       int i = length;
       /* Without incrementing length by one in the malloc and
        * adding the '/0' to the end, printing wordTyped after
@@ -138,14 +177,14 @@ int lets_tab_builtin(char **args)
         wordTyped[i-1] = word->letter;
         i--;
         word = ll_pop(word);
-      }
-      autocomplete(wordTyped, length);
+    }
+      autocomplete(wordTyped, dict, length);
       length = 0;
     }
 
     /* Jonas 05.16: Implement delete key
      * Known bug: as of right now, we can only
-     * delete one word at a time - the linked 
+     * delete one word at a time - the linked
      * list only stores one word at a time, so
      * therefore we cannot access the prior word
      * after deleting the most recently typed one.
@@ -153,7 +192,7 @@ int lets_tab_builtin(char **args)
      * so I'm leaving that to Sprint 4
      */
 
-    if (c == 127 || c == 8) { 
+    if (c == 127 || c == 8) {
       int x, y;
       getyx(stdscr, y, x);
       x--;

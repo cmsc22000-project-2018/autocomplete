@@ -11,6 +11,7 @@ Program which implements bash mode autocomplete
 #include "batch_mode.h"
 #include "dictionary.h"
 
+
 #define SHOWNWORDS 10
 
 
@@ -23,7 +24,7 @@ char** get_children_in_dict(char* s, char* dict_file)
 
 	//TODO: function that checks whether given string is a valid prefix
 	// since a prefix could exist that isn't a full word in the dictionary
-	assert((dict_exists(d, s)) == EXIT_SUCCESS);
+	//assert((dict_exists(d, s)) == EXIT_SUCCESS);
 
 	int i = 0;
 	int j = 0;
@@ -50,7 +51,7 @@ int num_children_in_dict(char* s, char* dict_file) {
         int rc = dict_read(d, dict_file);
         assert (rc == EXIT_SUCCESS);
 
-        assert((dict_exists(d, s)) == EXIT_SUCCESS);
+       // assert((dict_exists(d, s)) == EXIT_SUCCESS);
 
         int i = 0;
         int j = 0;
