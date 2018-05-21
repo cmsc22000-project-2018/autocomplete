@@ -12,6 +12,8 @@ Program which implements a tab-based command
 #include "batch_mode.h"
 #include "dictionary.h"
 
+#define DEFAULT_DICTIONARY_FILE "./src/test_dict.txt"
+#define DEFAULT_AMT_COMPLETIONS 10
 
 /*
 Checks if the input has two or more arguments and acts accordingly
@@ -52,12 +54,17 @@ struct word {
 // GUI works by tabbing through the options and the cursor cycles back to the frist when you go over. hit ENTER to select.
 
 
-void autocomplete(char *word, char *dict, int length)
+void autocomplete(char *word, char *dict, int length, int maxCompletions)
 {
+  if (maxCompletions == -1)
+	  maxCompletions = DEFAULT_AMT_COMPLETIONS;
+	if (dict == NULL)
+	   dict = DEFAULT_DICTIONARY_FILE;
 	int len = strlen(dict);
   char *fileType = &dict[len-4];
-	if (strncmp(fileType, ".txt", 4) != 0 || dict == NULL)
-	  dict = "./src/test_dict.txt";
+	if (strncmp(fileType, ".txt", 4) != 0)
+	  dict = DEFAULT_DICTIONARY_FILE;
+
   int x, y;
 	int x_org, y_org; //used for clearing screen
   getyx(stdscr, y, x);
@@ -70,8 +77,15 @@ void autocomplete(char *word, char *dict, int length)
   // some number that was inputed
   int num_children = num_children_in_dict(word, dict);
   int i;
-  for (i = 0; i < num_children; i++)
+	int childrenToDisplay;
+	if (maxCompletions > num_children)
+	  childrenToDisplay = num_children;
+	else
+	  childrenToDisplay = maxCompletions;
+  for (i = 0; i < childrenToDisplay; i++)
     printw("%d: %s\n", i, children[i]);
+	if (num_children > maxCompletions)
+	  printw("Printed [%d] completions out of [%d] available\n", maxCompletions, num_children);
 
 	//print this after autocomplete options to make tabbing less messy
 	//if (length > 10) {
@@ -92,7 +106,7 @@ void autocomplete(char *word, char *dict, int length)
   // tab through options, hit enter to select
   while(10 != (c = getch())) {
 		if(c == 9) {
-			if (moved < num_children) {
+			if (moved < childrenToDisplay) {
 				y++;
 				moved++;
 			} else {
@@ -114,9 +128,34 @@ void autocomplete(char *word, char *dict, int length)
 // command to enter interactive autocomplete mode
 int lets_tab_builtin(char **args)
 {
+
+  int amountOfArgs;
+	for (amountOfArgs = 0; args[amountOfArgs] != NULL; amountOfArgs++);
+
   if (has_n_args(args, 2) == 1) {} //does nothing for now
   struct word *word = NULL; //list
-	char *dict = args[0];
+
+	//bool server = false;
+	char *dict;
+
+	if (strncmp(args[0], "-s", 2) == 0) {
+    dict = "./src/test_prefixes.txt"; //placeholder for server location of dictionary
+		//server = true;
+	} else {
+		dict = args[1];
+	}
+
+
+	/*
+	char *flag = args[1];
+	if (strncmp(flag, "-s", 2) == 0) {
+	  //placeholder for server
+		dict = args[2];
+	} else {
+		dict = args[2];
+	}
+	*/
+
   int length = 0;
   int c;
   initscr();    // Start Curses Mode
@@ -151,8 +190,34 @@ int lets_tab_builtin(char **args)
         i--;
         word = ll_pop(word);
     }
-      autocomplete(wordTyped, dict, length);
+		  int maxCompletions = -1;
+		  if (amountOfArgs >= 3)
+				if(args[2] != NULL)
+				  maxCompletions = atoi(args[2]);
+
+      autocomplete(wordTyped, dict, length, maxCompletions);
       length = 0;
+    }
+
+    /* Jonas 05.16: Implement delete key
+     * Known bug: as of right now, we can only
+     * delete one word at a time - the linked
+     * list only stores one word at a time, so
+     * therefore we cannot access the prior word
+     * after deleting the most recently typed one.
+     * We'll have to change the word storage mechanism,
+     * so I'm leaving that to Sprint 4
+     */
+
+    if (c == 127 || c == 8) {
+      int x, y;
+      getyx(stdscr, y, x);
+      x--;
+      move(y, x);
+      clrtobot();
+      refresh();
+      word = ll_pop(word);
+      length--;
     }
     cbreak();
   }
