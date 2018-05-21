@@ -1,5 +1,5 @@
 /*
-Program which implements bash mode autocomplete
+Program which implements batch mode autocomplete within the same framework as bash mode
 */
 
 #include <string.h>
@@ -13,9 +13,9 @@ Program which implements bash mode autocomplete
 
 
 #define SHOWNWORDS 10
+#define MAXPREFLEN 32
 
-
-// See autocomplete.h
+// See batch_mode.h
 char** get_children_in_dict(char* s, char* dict_file)
 {
 	dict_t *d = dict_new();
@@ -69,11 +69,7 @@ int num_children_in_dict(char* s, char* dict_file) {
 	return j;
 }
 
-/* Prints the prefix, the number of children, if b==1 also the first n children.
-   TODO improve spacing to be more uniform across prefix lengths, i.e.
-       prefixlong:    n [words, go, here]
-       pref:          n [other, words, here]
-*/
+// Prints the prefix, the number of children, if b==1 also the first n children.
 void print_children(int b, int n, char* s, char* dict_file)
 {
     prefix_t* prefix;
@@ -87,7 +83,23 @@ void print_children(int b, int n, char* s, char* dict_file)
 
     ft_putstr(prefix->prefix);
     ft_putstr(": ");
-		char* temp_string = malloc(64 * sizeof(char));
+
+
+    //If the prefix is relatively short, inserts ... to even out line length.
+    int numDots = 0;
+		int prefLen = strlen(prefix->prefix);
+    if (prefLen < MAXPREFLEN/2) {
+			  numDots = MAXPREFLEN/2 - prefLen - 3;
+		}
+		for (int i = 0; i < numDots; i++) {
+			  ft_putstr(".");
+		}
+		// Sometimes numDots becomes negative, ex. if preflen + 1 = MAXPREFLEN/2
+		if(numDots > 0) {
+			  ft_putstr(" ");
+		}
+
+		char* temp_string = malloc(MAXPREFLEN * sizeof(char));
 		sprintf(temp_string,"%d",prefix->nComps);
 		ft_putstr(temp_string);
 		free(temp_string);
@@ -118,7 +130,7 @@ void print_children(int b, int n, char* s, char* dict_file)
     prefix_free(prefix);
 }
 
-// command to enter interactive autocomplete mode
+//Function to enter batch autocomplete mode within the interactive framework
 int batch_mode_builtin(char **args)
 {
 	int showWords = 0;
@@ -128,7 +140,7 @@ int batch_mode_builtin(char **args)
 	int fileSet = 0;
 
 	/*Parse input instructions into global variables.
-		Note that args[0] is ./autocomplete itself, so it is ignored.
+		Note that the first argument has been stripped already, so i starts at 0.
 		Currently uses asserts to avoid reading missing arguments,
 		we may want to make this more robust later.
 	*/
@@ -158,10 +170,11 @@ int batch_mode_builtin(char **args)
 			}
 	}
     if (fileSet) {
-		    char* currentPrefix = malloc(64 * sizeof(char)); //Temporary constant value
+		    char* currentPrefix = malloc(MAXPREFLEN * sizeof(char)); //Temporary constant value
         //For a cleaner look in shell
 				ft_putstr("\n");
-		    while (fgets(currentPrefix, 64, prefixFile)) {   //Temporary constant value
+		    while (fgets(currentPrefix, MAXPREFLEN, prefixFile)) {   //Temporary constant value
+					  //Strips the newline character by replacing it with the null terminator
 		    		currentPrefix[strlen(currentPrefix) - 1] = '\0';
 		    		print_children(showWords, nWords, currentPrefix, dictionary);
 		    }
