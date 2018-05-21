@@ -121,7 +121,7 @@ int lets_tab_builtin(char **args)
         length++;
       }
     }
-    if (c == 10 || c == 11 || c == 13 || c == 32) {
+    if (c == 32 || c == 10 || c == 11 || c == 13) {
       length = 0;
       word = NULL;
     }
