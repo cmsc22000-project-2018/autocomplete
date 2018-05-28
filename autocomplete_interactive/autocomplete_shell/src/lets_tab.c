@@ -238,7 +238,7 @@ int lets_tab_builtin(char **args)
           length = 0;
     }
 
-    // Pressing '`' saves the file to the screen
+    // Pressing '`' saves the screen to a file
     if (c == 96) {
       getyx(stdscr, y, x);
       printw("\nsaving the screen to autocomplete.txt\n");
