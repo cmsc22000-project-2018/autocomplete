@@ -204,7 +204,6 @@ int lets_tab_builtin(char **args)
         length++;
         word->prefix_length = length;
       }
-      
     }
 
     /* Jonas 05.16: Implement delete key
@@ -218,17 +217,21 @@ int lets_tab_builtin(char **args)
      */
 
     if (c == 127 || c == 8) {
-      int x, y;
-      getyx(stdscr, y, x);
-      x--;
-      move(y, x);
-      clrtobot();
-      refresh();
-      word = ll_pop(word);
-      if (word->prefix_length == -1)
-        length = 0;
-      else
-        length = word->prefix_length;
+        int x, y;
+        getyx(stdscr, y, x);
+        x--;
+        move(y, x);
+        clrtobot();
+        refresh();
+        word = ll_pop(word);
+        if (word) {
+           if (word->prefix_length == -1)
+            length = 0;
+          else
+            length = word->prefix_length;
+        }
+        else
+          length = 0;
     }
 
     cbreak();
