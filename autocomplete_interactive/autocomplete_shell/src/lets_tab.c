@@ -161,6 +161,7 @@ int lets_tab_builtin(char **args)
 	*/
 
   int length = 0;
+  int total_length = 0;
   int c;
   initscr();    // Start Curses Mode
   cbreak();
@@ -168,12 +169,13 @@ int lets_tab_builtin(char **args)
   while('~' != (c = getch())) {
 
     // Doesn't print tab, bkspace, or del
-    if (c != 9 && c != 127 && c != 8) {
+    if (c != 9 && c != 127 && c != 8 && c != 96) {
       printw("%c", c);
       word = ll_new(word);
       word->letter = c;
       length++;
       word->prefix_length = length;
+      total_length++;
     }
 
     if (c == 32 || c == 10 || c == 11 || c == 13) {
@@ -182,7 +184,7 @@ int lets_tab_builtin(char **args)
     }
 
     if (c == 9 && length > 0) {
-      
+        
       char *wordTyped = malloc(sizeof(char)*(word->prefix_length+1));
       int i = word->prefix_length;
       wordTyped[word->prefix_length] = '\0';
@@ -203,6 +205,7 @@ int lets_tab_builtin(char **args)
         word->letter = complete_word[i];
         length++;
         word->prefix_length = length;
+        total_length++;
       }
     }
 
@@ -224,6 +227,8 @@ int lets_tab_builtin(char **args)
         clrtobot();
         refresh();
         word = ll_pop(word);
+        if (total_length != 0)
+          total_length--;
         if (word) {
            if (word->prefix_length == -1)
             length = 0;
@@ -232,6 +237,37 @@ int lets_tab_builtin(char **args)
         }
         else
           length = 0;
+    }
+
+    // Right now, '`' saves the file
+    if (c == 96) {
+      printw("saving the screen to autocomplete.txt");
+      total_length++;
+      char *screen = malloc(sizeof(char)*(total_length));
+      int j = total_length;
+      struct word *tmp;
+      for (tmp = word; tmp != NULL; tmp = ll_next(tmp)) {
+        screen[j] = tmp->letter;
+        j--;
+      }
+      int k = 0;
+      printw("screen:\n");
+      for (k = 0; k <= total_length; k++) {
+        printw("%c", screen[k]);
+      }
+      printw("\n");
+      FILE *fp = fopen("autocomplete_save.txt", "w");
+      printw("total length: %d", total_length);
+      if (fp) {
+        j = 0;
+        fprintf(fp, "%c", screen[j]);
+        for (j = 0; j <= total_length; j++) {
+          fprintf(fp, "%c", screen[j]);
+        }
+      }
+      else
+        printw("could not open file");
+      fclose(fp);
     }
 
     cbreak();
