@@ -21,6 +21,7 @@ Checks if the input has two or more arguments and acts accordingly
 @param args The list of arguments to check
 @return 0 if there is no second argument, 1 if there is
 */
+
 static int has_n_args(char **args, int n)
 {
 	int i;
@@ -40,6 +41,7 @@ static int has_n_args(char **args, int n)
 // define struct for linked list library
 struct word {
   char letter;
+  int prefix_length;
 };
 
 //where autocomplete would go
@@ -54,7 +56,7 @@ struct word {
 // GUI works by tabbing through the options and the cursor cycles back to the frist when you go over. hit ENTER to select.
 
 
-void autocomplete(char *word, char *dict, int length, int maxCompletions)
+char* autocomplete(char *word, char *dict, int length, int maxCompletions)
 {
   if (maxCompletions == -1)
 	  maxCompletions = DEFAULT_AMT_COMPLETIONS;
@@ -121,8 +123,10 @@ void autocomplete(char *word, char *dict, int length, int maxCompletions)
   //clear autocomplete portion of screen
   wmove(stdscr, y_org, (x_org-length)); // prints over the typed word
   wrefresh(stdscr);
-  printw("%s ", children[moved-1]);
+  printw("%s", children[moved-1]);
   clrtobot();
+
+  return children[moved-1];
 }
 
 // command to enter interactive autocomplete mode
@@ -166,40 +170,40 @@ int lets_tab_builtin(char **args)
     // Doesn't print tab, bkspace, or del
     if (c != 9 && c != 127 && c != 8) {
       printw("%c", c);
-      if (c != 10 && c != 11 && c != 13) {
-        word = ll_new(word);
-        word->letter = c;
-        length++;
-      }
+      word = ll_new(word);
+      word->letter = c;
+      length++;
+      word->prefix_length = length;
     }
 
     if (c == 32 || c == 10 || c == 11 || c == 13) {
+      word->prefix_length = -1;
       length = 0;
-      word = NULL;
     }
 
-    if (c == 9) {
-      char *wordTyped = malloc(sizeof(char)*(length+1));
-      wordTyped[length] = '\0'; // Without this, there are rando characters at the end of words
-      int i = length;
-      /* Without incrementing length by one in the malloc and
-       * adding the '/0' to the end, printing wordTyped after
-       * deleting characters from it does not work.
-       * Jonas 05/16
-       */
-      wordTyped[length] = '\0';
+    if (c == 9 && length > 0) {
+      
+      char *wordTyped = malloc(sizeof(char)*(word->prefix_length+1));
+      int i = word->prefix_length;
+      wordTyped[word->prefix_length] = '\0';
       while (i != 0) {
         wordTyped[i-1] = word->letter;
         i--;
         word = ll_pop(word);
-    }
+      }
+
 		  int maxCompletions = -1;
 		  if (amountOfArgs >= 3)
 				if(args[2] != NULL)
 				  maxCompletions = atoi(args[2]);
-
-      autocomplete(wordTyped, dict, length, maxCompletions);
+      char *complete_word = autocomplete(wordTyped, dict, length, maxCompletions);
       length = 0;
+      for (i = 0; complete_word[i] != '\0'; i++) {
+        word = ll_new(word);
+        word->letter = complete_word[i];
+        length++;
+        word->prefix_length = length;
+      }
     }
 
     /* Jonas 05.16: Implement delete key
@@ -213,15 +217,23 @@ int lets_tab_builtin(char **args)
      */
 
     if (c == 127 || c == 8) {
-      int x, y;
-      getyx(stdscr, y, x);
-      x--;
-      move(y, x);
-      clrtobot();
-      refresh();
-      word = ll_pop(word);
-      length--;
+        int x, y;
+        getyx(stdscr, y, x);
+        x--;
+        move(y, x);
+        clrtobot();
+        refresh();
+        word = ll_pop(word);
+        if (word) {
+           if (word->prefix_length == -1)
+            length = 0;
+          else
+            length = word->prefix_length;
+        }
+        else
+          length = 0;
     }
+
     cbreak();
   }
   clear();
