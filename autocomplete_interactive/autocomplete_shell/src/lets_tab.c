@@ -171,7 +171,7 @@ int lets_tab_builtin(char **args)
     printw("Welcome to the interactive autocomplete editor!\n");
     printw("While typing a word, press tab to display autocomplete possibilities.\n");
     printw("If you want to save your work to a text file, press ` .\n");
-    printw("Press enter to begin!");
+    printw("To exit interactive mode, press ~ . Press enter to begin!");
     int c_start;
     while (10 != (c_start = getch())) 
       ;
