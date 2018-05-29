@@ -161,13 +161,25 @@ int lets_tab_builtin(char **args)
 
   int length = 0;
   int total_length = 0;
+  int start = 0;
   int c;
   int x, y;
   initscr();    // Start Curses Mode
   cbreak();
   noecho();
-  while('~' != (c = getch())) {
+  if (start == 0) {
+    printw("Welcome to the interactive autocomplete editor!\n");
+    printw("While typing a word, press tab to display autocomplete possibilities.\n");
+    printw("If you want to save your work to a text file, press ` .\n");
+    printw("To exit interactive mode, press ~ . Press enter to begin!");
+    int c_start;
+    while (10 != (c_start = getch())) 
+      ;
+    clear();
+    start = 1;
+  }
 
+  while('~' != (c = getch())) {
     // Doesn't print tab, bkspace, or del
     if (c != 9 && c != 127 && c != 8 && c != 96) {
       printw("%c", c);
@@ -281,15 +293,13 @@ int lets_tab_builtin(char **args)
         screen[j] = tmp->letter;
         j--;
       }
-      printw("\n"); //If you take this line out, it seg faults
       FILE *fp = fopen(complete_filename, "w");
-      printw("characters in file (including spaces): %d\n", total_length); //If you take this line out, it seg faults
       if (fp) {
         for (j = 1; j <= total_length; j++) {
           fprintf(fp, "%c", screen[j]);
         }
          fclose(fp);
-        printw("press enter to continue");
+        printw("\nfile save successful! press enter to continue");
         int c_1;
         while (10 != (c_1 = getch()))
           ;
@@ -298,6 +308,7 @@ int lets_tab_builtin(char **args)
         clrtobot();
         refresh();
       }
+      
       else
         printw("could not open file, saving aborted");
     }
