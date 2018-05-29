@@ -308,6 +308,7 @@ int lets_tab_builtin(char **args)
         clrtobot();
         refresh();
       }
+      
       else
         printw("could not open file, saving aborted");
     }
