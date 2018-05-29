@@ -6,7 +6,6 @@ Program which implements a tab-based command
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <string.h>
 #include "minishell.h"
 #include "ll.h"
 #include "batch_mode.h"
@@ -161,19 +160,22 @@ int lets_tab_builtin(char **args)
 	*/
 
   int length = 0;
+  int total_length = 0;
   int c;
+  int x, y;
   initscr();    // Start Curses Mode
   cbreak();
   noecho();
   while('~' != (c = getch())) {
 
     // Doesn't print tab, bkspace, or del
-    if (c != 9 && c != 127 && c != 8) {
+    if (c != 9 && c != 127 && c != 8 && c != 96) {
       printw("%c", c);
       word = ll_new(word);
       word->letter = c;
       length++;
       word->prefix_length = length;
+      total_length++;
     }
 
     if (c == 32 || c == 10 || c == 11 || c == 13) {
@@ -182,7 +184,7 @@ int lets_tab_builtin(char **args)
     }
 
     if (c == 9 && length > 0) {
-      
+        
       char *wordTyped = malloc(sizeof(char)*(word->prefix_length+1));
       int i = word->prefix_length;
       wordTyped[word->prefix_length] = '\0';
@@ -203,6 +205,7 @@ int lets_tab_builtin(char **args)
         word->letter = complete_word[i];
         length++;
         word->prefix_length = length;
+        total_length++;
       }
     }
 
@@ -217,13 +220,14 @@ int lets_tab_builtin(char **args)
      */
 
     if (c == 127 || c == 8) {
-        int x, y;
         getyx(stdscr, y, x);
         x--;
         move(y, x);
         clrtobot();
         refresh();
         word = ll_pop(word);
+        if (total_length != 0)
+          total_length--;
         if (word) {
            if (word->prefix_length == -1)
             length = 0;
@@ -232,6 +236,38 @@ int lets_tab_builtin(char **args)
         }
         else
           length = 0;
+    }
+
+    // Pressing '`' saves the screen to a file
+    if (c == 96) {
+      getyx(stdscr, y, x);
+      printw("\nsaving the screen to autocomplete.txt\n");
+      char screen[total_length];
+      int j = total_length;
+      struct word *tmp;
+      for (tmp = word; tmp != NULL; tmp = ll_next(tmp)) {
+        screen[j] = tmp->letter;
+        j--;
+      }
+      printw("\n");
+      FILE *fp = fopen("autocomplete_save.txt", "w");
+      printw("characters in file (including spaces): %d\n", total_length); //If you take this out, it seg faults
+      if (fp) {
+        for (j = 1; j <= total_length; j++) {
+          fprintf(fp, "%c", screen[j]);
+        }
+      }
+      else
+        printw("could not open file");
+      fclose(fp);
+      printw("press enter to continue");
+      int c_0;
+      while (10 != (c_0 = getch()))
+        ;
+      move(y, x);
+      refresh();
+      clrtobot();
+      refresh();
     }
 
     cbreak();
