@@ -58,18 +58,18 @@ struct word {
 char* autocomplete(char *word, char *dict, int length, int maxCompletions)
 {
   if (maxCompletions == -1)
-	  maxCompletions = DEFAULT_AMT_COMPLETIONS;
-	if (dict == NULL)
-	   dict = DEFAULT_DICTIONARY_FILE;
-	int len = strlen(dict);
+    maxCompletions = DEFAULT_AMT_COMPLETIONS;
+  if (dict == NULL)
+     dict = DEFAULT_DICTIONARY_FILE;
+  int len = strlen(dict);
   char *fileType = &dict[len-4];
-	if (strncmp(fileType, ".txt", 4) != 0)
-	  dict = DEFAULT_DICTIONARY_FILE;
+  if (strncmp(fileType, ".txt", 4) != 0)
+    dict = DEFAULT_DICTIONARY_FILE;
 
   int x, y;
-	int x_org, y_org; //used for clearing screen
+  int x_org, y_org; //used for clearing screen
   getyx(stdscr, y, x);
-	getyx(stdscr, y_org, x_org); //used for clearing screen
+  getyx(stdscr, y_org, x_org); //used for clearing screen
 
   printw("\nHere are suggestions to automplete \"%s\"\n", word);
 
@@ -78,46 +78,46 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
   // some number that was inputed
   int num_children = num_children_in_dict(word, dict);
   int i;
-	int childrenToDisplay;
-	if (maxCompletions > num_children)
-	  childrenToDisplay = num_children;
-	else
-	  childrenToDisplay = maxCompletions;
+  int childrenToDisplay;
+  if (maxCompletions > num_children)
+    childrenToDisplay = num_children;
+  else
+    childrenToDisplay = maxCompletions;
   for (i = 0; i < childrenToDisplay; i++)
     printw("%d: %s\n", i, children[i]);
-	if (num_children > maxCompletions)
-	  printw("Printed [%d] completions out of [%d] available\n", maxCompletions, num_children);
+  if (num_children > maxCompletions)
+    printw("Printed [%d] completions out of [%d] available\n", maxCompletions, num_children);
 
-	//print this after autocomplete options to make tabbing less messy
-	//if (length > 10) {
+  //print this after autocomplete options to make tabbing less messy
+  //if (length > 10) {
   //  printw("Only the first ten possibilities displayed\n");
   //  length = 10;
   //}
 
   int c;
-	y++;
-	int moved = 0; //keep track of how many tabs hit for cycling
-	int og_y = y; //used for moving cursor to correct position for tab-completion
+  y++;
+  int moved = 0; //keep track of how many tabs hit for cycling
+  int og_y = y; //used for moving cursor to correct position for tab-completion
 
   //move to position
   x = 0;
-	y++;
-	moved++;
-	wmove(stdscr, y, x);
+  y++;
+  moved++;
+  wmove(stdscr, y, x);
   // tab through options, hit enter to select
   while(10 != (c = getch())) {
-		if(c == 9) {
-			if (moved < childrenToDisplay) {
-				y++;
-				moved++;
-			} else {
-				y = og_y+1;
-				moved = 1;
-			}
-			wmove(stdscr, y, x);
-		}
-	}
-	c = mvwinch(stdscr, y, x);
+    if(c == 9) {
+      if (moved < childrenToDisplay) {
+        y++;
+        moved++;
+      } else {
+        y = og_y+1;
+        moved = 1;
+      }
+      wmove(stdscr, y, x);
+    }
+  }
+  c = mvwinch(stdscr, y, x);
 
   //clear autocomplete portion of screen
   wmove(stdscr, y_org, (x_org-length)); // prints over the typed word
@@ -126,6 +126,24 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
   clrtobot();
 
   return children[moved-1];
+}
+
+
+int dict_check(char word[500], int length, char *dict) {
+  if (dict == NULL)
+     dict = DEFAULT_DICTIONARY_FILE;
+  char *total_word = malloc(sizeof(char)*(length+1));
+  int i;
+  for (i = 0; i < length; i++)
+    total_word[i] = word[i];
+  total_word[length] = '\0';
+  //printw("check: %s", total_word);
+  int check = num_children_in_dict(total_word, dict);
+  //printw("check: %d", check);
+  if (check == 1)
+    return 1;
+  else
+    return 0;
 }
 
 // command to enter interactive autocomplete mode
@@ -166,11 +184,18 @@ int lets_tab_builtin(char **args)
   initscr();    // Start Curses Mode
   cbreak();
   noecho();
+  char buffer[500];
+  int auto_check;
+  int auto_len = 0;
   while('~' != (c = getch())) {
 
     // Doesn't print tab, bkspace, or del
     if (c != 9 && c != 127 && c != 8 && c != 96) {
       printw("%c", c);
+      buffer[auto_len] = c;
+      auto_len++;
+      auto_check = dict_check(buffer, auto_len, dict);
+      //printw("check: %d", auto_check);
       word = ll_new(word);
       word->letter = c;
       length++;
@@ -183,8 +208,7 @@ int lets_tab_builtin(char **args)
       length = 0;
     }
 
-    if (c == 9 && length > 0) {
-        
+    if ((c == 9 && length > 0) || auto_check == 1) {
       char *wordTyped = malloc(sizeof(char)*(word->prefix_length+1));
       int i = word->prefix_length;
       wordTyped[word->prefix_length] = '\0';
@@ -199,7 +223,6 @@ int lets_tab_builtin(char **args)
 				if(args[2] != NULL)
 				  maxCompletions = atoi(args[2]);
       char *complete_word = autocomplete(wordTyped, dict, length, maxCompletions);
-      length = 0;
       for (i = 0; complete_word[i] != '\0'; i++) {
         word = ll_new(word);
         word->letter = complete_word[i];
