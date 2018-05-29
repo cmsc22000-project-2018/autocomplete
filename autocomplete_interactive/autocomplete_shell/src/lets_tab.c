@@ -55,7 +55,7 @@ struct word {
 // GUI works by tabbing through the options and the cursor cycles back to the frist when you go over. hit ENTER to select.
 
 
-char* autocomplete(char *word, char *dict, int length, int maxCompletions)
+char* autocomplete(char *word, char *dict, int length, int maxCompletions, int auto_check)
 {
   if (maxCompletions == -1)
     maxCompletions = DEFAULT_AMT_COMPLETIONS;
@@ -65,15 +65,17 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
   char *fileType = &dict[len-4];
   if (strncmp(fileType, ".txt", 4) != 0)
     dict = DEFAULT_DICTIONARY_FILE;
-
   int x, y;
   int x_org, y_org; //used for clearing screen
   getyx(stdscr, y, x);
   getyx(stdscr, y_org, x_org); //used for clearing screen
+  char **children = get_children_in_dict(word, dict);
+  int moved = 1;
+
+  if (auto_check == 0) {};
 
   printw("\nHere are suggestions to automplete \"%s\"\n", word);
 
-  char **children = get_children_in_dict(word, dict);
   // In order to restrict the number of options printed, change "num_children" to
   // some number that was inputed
   int num_children = num_children_in_dict(word, dict);
@@ -88,21 +90,15 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
   if (num_children > maxCompletions)
     printw("Printed [%d] completions out of [%d] available\n", maxCompletions, num_children);
 
-  //print this after autocomplete options to make tabbing less messy
-  //if (length > 10) {
-  //  printw("Only the first ten possibilities displayed\n");
-  //  length = 10;
-  //}
-
   int c;
   y++;
-  int moved = 0; //keep track of how many tabs hit for cycling
+  //int moved = 0; //keep track of how many tabs hit for cycling
   int og_y = y; //used for moving cursor to correct position for tab-completion
 
   //move to position
   x = 0;
   y++;
-  moved++;
+  //moved++;
   wmove(stdscr, y, x);
   // tab through options, hit enter to select
   while(10 != (c = getch())) {
@@ -222,7 +218,7 @@ int lets_tab_builtin(char **args)
 		  if (amountOfArgs >= 3)
 				if(args[2] != NULL)
 				  maxCompletions = atoi(args[2]);
-      char *complete_word = autocomplete(wordTyped, dict, length, maxCompletions);
+      char *complete_word = autocomplete(wordTyped, dict, length, maxCompletions, auto_check);
       for (i = 0; complete_word[i] != '\0'; i++) {
         word = ll_new(word);
         word->letter = complete_word[i];
