@@ -293,15 +293,13 @@ int lets_tab_builtin(char **args)
         screen[j] = tmp->letter;
         j--;
       }
-      printw("\n"); //If you take this line out, it seg faults
       FILE *fp = fopen(complete_filename, "w");
-      printw("characters in file (including spaces): %d\n", total_length); //If you take this line out, it seg faults
       if (fp) {
         for (j = 1; j <= total_length; j++) {
           fprintf(fp, "%c", screen[j]);
         }
          fclose(fp);
-        printw("press enter to continue");
+        printw("\nfile save successful! press enter to continue");
         int c_1;
         while (10 != (c_1 = getch()))
           ;
