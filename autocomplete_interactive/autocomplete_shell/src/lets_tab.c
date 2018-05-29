@@ -72,7 +72,11 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions, int a
   char **children = get_children_in_dict(word, dict);
   int moved = 1;
 
-  if (auto_check == 0) {};
+  int check = auto_check;
+
+  if (check == 0) {
+    
+  };
 
   printw("\nHere are suggestions to automplete \"%s\"\n", word);
 
@@ -135,6 +139,7 @@ int dict_check(char word[500], int length, char *dict) {
   total_word[length] = '\0';
   //printw("check: %s", total_word);
   int check = num_children_in_dict(total_word, dict);
+  printw("check: %d", check);
   //printw("check: %d", check);
   if (check == 1)
     return 1;
