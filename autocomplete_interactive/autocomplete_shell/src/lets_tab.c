@@ -167,6 +167,7 @@ int lets_tab_builtin(char **args)
 
     // Doesn't print tab, bkspace, or del
     if (c != 9 && c != 127 && c != 8 && c != 96) {
+      //printw("dictionary: %s\n", dict);
       printw("%c", c);
       word = ll_new(word);
       word->letter = c;
