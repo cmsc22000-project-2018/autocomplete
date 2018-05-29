@@ -161,13 +161,25 @@ int lets_tab_builtin(char **args)
 
   int length = 0;
   int total_length = 0;
+  int start = 0;
   int c;
   int x, y;
   initscr();    // Start Curses Mode
   cbreak();
   noecho();
-  while('~' != (c = getch())) {
+  if (start == 0) {
+    printw("Welcome to the interactive autocomplete editor!\n");
+    printw("While typing a word, press tab to display autocomplete possibilities.\n");
+    printw("If you want to save your work to a text file, press ` .\n");
+    printw("Press enter to begin!");
+    int c_start;
+    while (10 != (c_start = getch())) 
+      ;
+    clear();
+    start = 1;
+  }
 
+  while('~' != (c = getch())) {
     // Doesn't print tab, bkspace, or del
     if (c != 9 && c != 127 && c != 8 && c != 96) {
       printw("%c", c);
@@ -208,16 +220,6 @@ int lets_tab_builtin(char **args)
         total_length++;
       }
     }
-
-    /* Jonas 05.16: Implement delete key
-     * Known bug: as of right now, we can only
-     * delete one word at a time - the linked
-     * list only stores one word at a time, so
-     * therefore we cannot access the prior word
-     * after deleting the most recently typed one.
-     * We'll have to change the word storage mechanism,
-     * so I'm leaving that to Sprint 4
-     */
 
     if (c == 127 || c == 8) {
         getyx(stdscr, y, x);
