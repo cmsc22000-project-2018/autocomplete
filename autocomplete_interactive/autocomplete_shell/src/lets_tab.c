@@ -209,16 +209,6 @@ int lets_tab_builtin(char **args)
       }
     }
 
-    /* Jonas 05.16: Implement delete key
-     * Known bug: as of right now, we can only
-     * delete one word at a time - the linked
-     * list only stores one word at a time, so
-     * therefore we cannot access the prior word
-     * after deleting the most recently typed one.
-     * We'll have to change the word storage mechanism,
-     * so I'm leaving that to Sprint 4
-     */
-
     if (c == 127 || c == 8) {
         getyx(stdscr, y, x);
         x--;
@@ -241,33 +231,75 @@ int lets_tab_builtin(char **args)
     // Pressing '`' saves the screen to a file
     if (c == 96) {
       getyx(stdscr, y, x);
-      printw("\nsaving the screen to autocomplete.txt\n");
+      printw("\nenter your file name and press enter:\n");
+      int c_0;
+      int name_length = 0;
+      int j;
+      struct word *filename = NULL;
+      // Gets the filename from user input
+      while (10 != (c_0 = getch())) {
+        // Cannot add space, forwardslash, or delete key to the filename
+        if (c_0 != 32 && c_0 != 92 && c_0 != 127 && c_0 != 8) {
+          printw("%c", c_0);
+          name_length++;
+          filename = ll_new(filename);
+          filename->letter = c_0;
+        }
+        // Delete key functionality
+        if (c_0 == 127 || c_0 == 8) {
+          if (name_length != 0) {
+            int x_0, y_0;
+            getyx(stdscr, y_0, x_0);
+            x_0--;
+            move(y_0, x_0);
+            clrtobot();
+            refresh();
+            filename = ll_pop(filename);
+            name_length--;
+          }
+        }
+      }
+      char *complete_filename;
+      // transfers the linked list to a string
+      if (filename) {
+        complete_filename = malloc(sizeof(char)*(name_length+1));
+        complete_filename[name_length] = '\0';
+        for (j=name_length-1; j >=0; j--) {
+          complete_filename[j] = filename->letter;
+          filename = ll_pop(filename);
+        }
+      }
+      // If no filename is entered, saves to a generic file
+      else {
+        printw("no filename entered, saving to autocomplete_save.txt");
+        complete_filename = "autocomplete_save.txt";
+      }
       char screen[total_length];
-      int j = total_length;
+      j = total_length;
       struct word *tmp;
       for (tmp = word; tmp != NULL; tmp = ll_next(tmp)) {
         screen[j] = tmp->letter;
         j--;
       }
-      printw("\n");
-      FILE *fp = fopen("autocomplete_save.txt", "w");
-      printw("characters in file (including spaces): %d\n", total_length); //If you take this out, it seg faults
+      printw("\n"); //If you take this line out, it seg faults
+      FILE *fp = fopen(complete_filename, "w");
+      printw("characters in file (including spaces): %d\n", total_length); //If you take this line out, it seg faults
       if (fp) {
         for (j = 1; j <= total_length; j++) {
           fprintf(fp, "%c", screen[j]);
         }
+         fclose(fp);
+        printw("press enter to continue");
+        int c_1;
+        while (10 != (c_1 = getch()))
+          ;
+        move(y, x);
+        refresh();
+        clrtobot();
+        refresh();
       }
       else
-        printw("could not open file");
-      fclose(fp);
-      printw("press enter to continue");
-      int c_0;
-      while (10 != (c_0 = getch()))
-        ;
-      move(y, x);
-      refresh();
-      clrtobot();
-      refresh();
+        printw("could not open file, saving aborted");
     }
 
     cbreak();
