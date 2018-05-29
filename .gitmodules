@@ -1,0 +1,6 @@
+[submodule "api"]
+	path = api
+	url = https://github.com/cmsc22000-project-2018/api.git
+[submodule "redis-tries"]
+	path = redis-tries
+	url = https://github.com/cmsc22000-project-2018/redis-tries.git
