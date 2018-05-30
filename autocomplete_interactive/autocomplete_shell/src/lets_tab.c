@@ -70,54 +70,56 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
 	int x_org, y_org; //used for clearing screen
   getyx(stdscr, y, x);
 	getyx(stdscr, y_org, x_org); //used for clearing screen
-
-  printw("\nHere are suggestions to automplete \"%s\"\n", word);
-
-  char **children = get_children_in_dict(word, dict);
-  // In order to restrict the number of options printed, change "num_children" to
-  // some number that was inputed
+  int moved = 1;
   int num_children = num_children_in_dict(word, dict);
-  int i;
-	int childrenToDisplay;
-	if (maxCompletions > num_children)
-	  childrenToDisplay = num_children;
-	else
-	  childrenToDisplay = maxCompletions;
-  for (i = 0; i < childrenToDisplay; i++)
-    printw("%d: %s\n", i, children[i]);
-	if (num_children > maxCompletions)
-	  printw("Printed [%d] completions out of [%d] available\n", maxCompletions, num_children);
+  char **children = get_children_in_dict(word, dict);
 
-	//print this after autocomplete options to make tabbing less messy
-	//if (length > 10) {
-  //  printw("Only the first ten possibilities displayed\n");
-  //  length = 10;
-  //}
+  if (num_children > 1) {
+    printw("\nHere are suggestions to automplete \"%s\"\n", word);
+    // In order to restrict the number of options printed, change "num_children" to
+    // some number that was inputed
+    int i;
+    int childrenToDisplay;
+    if (maxCompletions > num_children)
+      childrenToDisplay = num_children;
+    else
+      childrenToDisplay = maxCompletions;
+    for (i = 0; i < childrenToDisplay; i++)
+      printw("%d: %s\n", i, children[i]);
+    if (num_children > maxCompletions)
+      printw("Printed [%d] completions out of [%d] available\n", maxCompletions, num_children);
 
-  int c;
-	y++;
-	int moved = 0; //keep track of how many tabs hit for cycling
-	int og_y = y; //used for moving cursor to correct position for tab-completion
+    //print this after autocomplete options to make tabbing less messy
+    //if (length > 10) {
+    //  printw("Only the first ten possibilities displayed\n");
+    //  length = 10;
+    //}
 
-  //move to position
-  x = 0;
-	y++;
-	moved++;
-	wmove(stdscr, y, x);
-  // tab through options, hit enter to select
-  while(10 != (c = getch())) {
-		if(c == 9) {
-			if (moved < childrenToDisplay) {
-				y++;
-				moved++;
-			} else {
-				y = og_y+1;
-				moved = 1;
-			}
-			wmove(stdscr, y, x);
-		}
-	}
-	c = mvwinch(stdscr, y, x);
+    int c;
+    y++;
+    //int moved = 0; //keep track of how many tabs hit for cycling
+    int og_y = y; //used for moving cursor to correct position for tab-completion
+
+    //move to position
+    x = 0;
+    y++;
+    //moved++;
+    wmove(stdscr, y, x);
+    // tab through options, hit enter to select
+    while(10 != (c = getch())) {
+      if(c == 9) {
+        if (moved < childrenToDisplay) {
+          y++;
+        moved++;
+        } else {
+          y = og_y+1;
+          moved = 1;
+        }
+        wmove(stdscr, y, x);
+      }
+    }
+    c = mvwinch(stdscr, y, x);
+  }
 
   //clear autocomplete portion of screen
   wmove(stdscr, y_org, (x_org-length)); // prints over the typed word
