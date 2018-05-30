@@ -55,16 +55,21 @@ struct word {
 // GUI works by tabbing through the options and the cursor cycles back to the frist when you go over. hit ENTER to select.
 
 
-char* autocomplete(char *word, char *dict, int length, int maxCompletions)
+char* autocomplete(char *word, char *dict, int length, int maxCompletions, bool server)
 {
   if (maxCompletions == -1)
-	  maxCompletions = DEFAULT_AMT_COMPLETIONS;
+	  maxCompletions = DEFAULT_AMT_COMPLETIONS; // determines how many children are displayed
 	if (dict == NULL)
 	   dict = DEFAULT_DICTIONARY_FILE;
-	int len = strlen(dict);
+	
+  // If server == false
+  int len = strlen(dict);
   char *fileType = &dict[len-4];
 	if (strncmp(fileType, ".txt", 4) != 0)
 	  dict = DEFAULT_DICTIONARY_FILE;
+
+  // Need to implement if server == true
+  // Result: something you can pass into get_children_in_dict and num_children_in_dict
 
   int x, y;
 	int x_org, y_org; //used for clearing screen
@@ -138,12 +143,15 @@ int lets_tab_builtin(char **args)
   if (has_n_args(args, 2) == 1) {} //does nothing for now
   struct word *word = NULL; //list
 
-	//bool server = false;
+	bool server = false;
 	char *dict;
 
-	if (strncmp(args[0], "-s", 2) == 0) {
+	
+  // Control structure for server versus dictionary
+  if (strncmp(args[0], "-s", 2) == 0) {
+    // This is where you parse out the command line input so you can pass it into the autocomplete fxn
     dict = "./src/test_prefixes.txt"; //placeholder for server location of dictionary
-		//server = true;
+		server = true;
 	} else {
 		dict = args[1];
 	}
@@ -210,7 +218,7 @@ int lets_tab_builtin(char **args)
 		  if (amountOfArgs >= 3)
 				if(args[2] != NULL)
 				  maxCompletions = atoi(args[2]);
-      char *complete_word = autocomplete(wordTyped, dict, length, maxCompletions);
+      char *complete_word = autocomplete(wordTyped, dict, length, maxCompletions, server);
       length = 0;
       for (i = 0; complete_word[i] != '\0'; i++) {
         word = ll_new(word);
