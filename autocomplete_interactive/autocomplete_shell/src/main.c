@@ -182,6 +182,7 @@ int				main(int ac, char **av, char **envv)
 	int		ret;
 	char	**commands;
   int firstCommand = 0;
+	int shouldExit = 0;
 
   if (ac == 1) {
 		ac = 3;
@@ -191,6 +192,13 @@ int				main(int ac, char **av, char **envv)
 		av = defaultArgs;
 		firstCommand = 0;
 	} else if (!strncmp(av[1], "-i", 2)) {
+		  if (av[2] == NULL) {
+				ac = 3;
+				char *defaultArgs[ac];
+				defaultArgs[0] = av[0];
+				defaultArgs[1] = "-i";
+				av = defaultArgs;
+			}
 			firstCommand = 0;
 			//This currently doesn't trigger anything in particular, eventually this flag will be required
 	}
@@ -202,9 +210,9 @@ int				main(int ac, char **av, char **envv)
 	init_envv(ac, av, envv);
 	while (1)
 	{
-		display_prompt_msg();
     if (firstCommand == 0) {
       // Jonas 05.17: Edited to take in more than one argument
+			display_prompt_msg();
       char* interactive = malloc(sizeof(char) * 13);
       strcpy(interactive, "interactive");
 			char* arguments = concatenate(ac - 2, &(av[2]), " ");
@@ -222,7 +230,13 @@ int				main(int ac, char **av, char **envv)
 			strcat(input, " ");
       input = parse_input(strcat(input, arguments));
       firstCommand+=2;
+			shouldExit = 1;
+		} else if (shouldExit == 1) {
+			input = malloc(sizeof(char)*5);
+			strcpy(input, "exit");
+			input = parse_input(input);
 		} else {
+			display_prompt_msg();
       signal(SIGINT, signal_handler);
       get_input(&input);
     }
