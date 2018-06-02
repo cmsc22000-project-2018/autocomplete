@@ -15,13 +15,17 @@
  ```
  ./autocomplete -b <-w> <-n NUM> <-d DICT> -f FILE
  ```
- Only the -b and -f FILE flags are required, all others are optional.\n
+ Only the -b and -f FILE flags are required, all others are optional.
 
- The -b flag indicates that the tool is being used in batch mode.\n
- The -w flag, if present, enables the display of the first n completions of each prefix in the file.\n
- The -n flag changes the number of completions shown from its default value, 10, to the value specified (NUM).\n
- The -d flag allows the setting of a non-standard dictionary, and the DICT file can be specified by e.g. ./dictionary.text\n
- The -f flag is for the file of prefixes to be declared, specified by e.g. ./prefixes.text\n
+ The -b flag indicates that the tool is being used in batch mode.
+ 
+ The -w flag, if present, enables the display of the first n completions of each prefix in the file.
+
+ The -n flag changes the number of completions shown from its default value, 10, to the value specified (NUM).
+
+ The -d flag allows the setting of a non-standard dictionary, and the DICT file can be specified by e.g. ./dictionary.text
+
+ The -f flag is for the file of prefixes to be declared, specified by e.g. ./prefixes.text
 
  The output is of the form
  ```
