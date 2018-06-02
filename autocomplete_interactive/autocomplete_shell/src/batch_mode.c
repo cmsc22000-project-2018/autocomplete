@@ -145,8 +145,7 @@ int batch_mode_builtin(char **args)
 	*/
 	for (int i = 0; args[i] != NULL; i+=2) {
 			if (!strncmp(args[i], "-w", 2)) {
-					assert(args[i + 1] != NULL);
-					showWords = atoi(args[i + 1]);
+					showWords = 1;
 			}
 			if (!strncmp(args[i], "-n", 2)) {
 					assert(args[i + 1] != NULL);
