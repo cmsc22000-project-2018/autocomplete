@@ -11,6 +11,7 @@ Program which implements batch mode autocomplete within the same framework as ba
 #include "batch_mode.h"
 #include "dictionary.h"
 
+
 #define SHOWNWORDS 10
 #define MAXPREFLEN 32
 

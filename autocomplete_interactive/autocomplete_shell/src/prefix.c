@@ -4,8 +4,8 @@
 #include <assert.h>
 #include "prefix.h"
 
-static const unsigned int MAXLENGTH = 32;
-static const unsigned int MAXCOMPS = 2048;
+static const unsigned int MAXLENGTH = 64;
+static const unsigned int MAXPREFS = 2048;
 
 prefix_t* prefix_new(char* p, char** c, int n)
 {
@@ -17,7 +17,7 @@ prefix_t* prefix_new(char* p, char** c, int n)
 
     pref->nComps = n;
 
-    pref->completions = malloc(MAXCOMPS * sizeof(char*));
+    pref->completions = malloc(MAXLENGTH * MAXPREFS);
     if (c != NULL) {
         for(int i = 0; i < n; i++) {
             pref->completions[i] = malloc(MAXLENGTH > (strlen(c[i]) + 1) ? strlen(c[i]) + 1 : MAXLENGTH);
