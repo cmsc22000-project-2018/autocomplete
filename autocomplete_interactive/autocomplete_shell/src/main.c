@@ -206,6 +206,13 @@ int				main(int ac, char **av, char **envv)
 	else if (!strncmp(av[1], "-b", 2)) {
 			firstCommand = 1;
 	}
+	//Help 'mode'
+	else if (!strncmp(av[1], "-h", 2) || !strncmp(av[1], "help", 4)) {
+		  firstCommand = 2;
+			printf("For full documentation and help, and details on batch mode, please see the readme at \nhttps://github.com/cmsc22000-project-2018/autocomplete \n");
+			printf("To get started with interactive mode, just type ./autocomplete\n");
+			shouldExit = 1;
+	}
 
 	init_envv(ac, av, envv);
 	while (1)
