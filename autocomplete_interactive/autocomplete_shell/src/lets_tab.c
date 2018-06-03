@@ -173,7 +173,7 @@ int lets_tab_builtin(char **args)
     printw("If you want to save your work to a text file, press ` .\n");
     printw("To exit interactive mode, press ~ . Press enter to begin!");
     int c_start;
-    while (10 != (c_start = getch())) 
+    while (10 != (c_start = getch()))
       ;
     clear();
     start = 1;
@@ -196,7 +196,7 @@ int lets_tab_builtin(char **args)
     }
 
     if (c == 9 && length > 0) {
-        
+
       char *wordTyped = malloc(sizeof(char)*(word->prefix_length+1));
       int i = word->prefix_length;
       wordTyped[word->prefix_length] = '\0';
@@ -207,9 +207,23 @@ int lets_tab_builtin(char **args)
       }
 
 		  int maxCompletions = -1;
-		  if (amountOfArgs >= 3)
-				if(args[2] != NULL)
-				  maxCompletions = atoi(args[2]);
+			bool n_flag_found = false;
+			int flag = 0;
+			for (; flag < amountOfArgs; flag++) {
+				if (args[flag] != NULL) {
+					if (strncmp(args[flag], "-n", 2) == 0){
+				    n_flag_found = true;
+					  break;
+					}
+				}
+			}
+
+			if (n_flag_found == true)
+			  if (args[flag+1] != NULL)
+				  maxCompletions = atoi(args[flag+1]);
+		  //if (amountOfArgs >= 3)
+				//if(args[2] != NULL)
+				  //maxCompletions = atoi(args[2]);
       char *complete_word = autocomplete(wordTyped, dict, length, maxCompletions);
       length = 0;
       for (i = 0; complete_word[i] != '\0'; i++) {
@@ -308,7 +322,7 @@ int lets_tab_builtin(char **args)
         clrtobot();
         refresh();
       }
-      
+
       else
         printw("could not open file, saving aborted");
     }
