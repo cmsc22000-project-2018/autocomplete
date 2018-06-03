@@ -28,13 +28,22 @@ LIBINC = ./libft/includes/
 
 # Optimization and Compiler flags and commands
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Wextra
+LDFLAGS = -L./api -Wl,-rpath,./api
+LDLIBS = -lredisApi
+
+# -Werror
 
 # Debugging flags
 DEBUG = -g
 
+API = api
+
 # Main rule
-all: $(BUILDDIR) $(LIBFT) $(NAME)
+all: redis $(BUILDDIR) $(LIBFT) $(NAME)
+
+redis:
+	make -C api
 
 # Object dir rule
 $(BUILDDIR):
@@ -42,11 +51,11 @@ $(BUILDDIR):
 
 # Objects rule
 $(BUILDDIR)%.o:$(SRCDIR)%.c
-	$(CC) $(CFLAGS) -I$(LIBINC) -I$(INC) -o $@ -c $<
+	$(CC) $(CFLAGS) $(LDFLAGS) -I$(LIBINC) -I$(INC) -o $@ -c $<
 
 # Project file rule
 $(NAME): $(BUILDOBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(BUILDOBJS) $(LIBFT) -lncurses
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(NAME) $(BUILDOBJS) $(LIBFT) -lncurses $(LDLIBS)
 
 # Libft rule
 $(LIBFT):
@@ -56,11 +65,13 @@ $(LIBFT):
 clean:
 	rm -rf $(BUILDDIR)
 	make -C $(LIBDIR) clean
+	make -C api clean
 
 # Getting rid of the project file
 fclean: clean
 	rm -rf $(NAME)
 	make -C $(LIBDIR) fclean
+	make -C api clean
 
 # Do both of the above
 re: fclean all
