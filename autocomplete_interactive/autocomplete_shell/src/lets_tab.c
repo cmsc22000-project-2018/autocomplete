@@ -6,13 +6,15 @@ Program which implements a tab-based command
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <ctype.h>
 #include "minishell.h"
 #include "ll.h"
 #include "batch_mode.h"
 #include "dictionary.h"
 
-#define DEFAULT_DICTIONARY_FILE "./src/test_dict.txt"
+#define DEFAULT_DICTIONARY_FILE "./src/lcase_dict.txt"
 #define DEFAULT_AMT_COMPLETIONS 10
+#define DEFAULT_MAX_PREF_LEN 32
 
 /*
 Checks if the input has two or more arguments and acts accordingly
@@ -73,18 +75,37 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
 
   printw("\nHere are suggestions to automplete \"%s\"\n", word);
 
-  char **children = get_children_in_dict(word, dict);
+  // Generate the lowercase version of the word
+	char* lWord = malloc(DEFAULT_MAX_PREF_LEN * sizeof(char));
+	strcpy(lWord, word);
+	for(int i = 0; lWord[i] != '\0'; i++) {
+			lWord[i] = tolower(lWord[i]);
+	}
+
+  char **children = get_children_in_dict(lWord, dict);
+
   // In order to restrict the number of options printed, change "num_children" to
   // some number that was inputed
-  int num_children = num_children_in_dict(word, dict);
+  int num_children = num_children_in_dict(lWord, dict);
+
+  // Stores the portion of the child that comes after the typed prefix_t
+	char** partialChildren = malloc(num_children);
+
   int i;
 	int childrenToDisplay;
 	if (maxCompletions > num_children)
 	  childrenToDisplay = num_children;
 	else
 	  childrenToDisplay = maxCompletions;
-  for (i = 0; i < childrenToDisplay; i++)
-    printw("%d: %s\n", i, children[i]);
+  for (i = 0; i < childrenToDisplay; i++) {
+
+	  //create pointer to "the rest" of the word
+		partialChildren[i] = malloc(strlen(children[i]) + 1);
+		strcpy(partialChildren[i], children[i]);
+		partialChildren[i] += (strlen(word) * sizeof(char));
+    //prints the word, as entered, plus the 'rest' from the dictionary
+    printw("%d: %s%s\n", i, word, partialChildren[i]);
+	}
 	if (num_children > maxCompletions)
 	  printw("Printed [%d] completions out of [%d] available\n", maxCompletions, num_children);
 
@@ -122,7 +143,7 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
   //clear autocomplete portion of screen
   wmove(stdscr, y_org, (x_org-length)); // prints over the typed word
   wrefresh(stdscr);
-  printw("%s", children[moved-1]);
+  printw("%s%s", word, partialChildren[moved-1]);
   clrtobot();
 
   return children[moved-1];
@@ -173,7 +194,7 @@ int lets_tab_builtin(char **args)
     printw("If you want to save your work to a text file, press ` .\n");
     printw("To exit interactive mode, press ~ . Press enter to begin!");
     int c_start;
-    while (10 != (c_start = getch())) 
+    while (10 != (c_start = getch()))
       ;
     clear();
     start = 1;
@@ -196,7 +217,7 @@ int lets_tab_builtin(char **args)
     }
 
     if (c == 9 && length > 0) {
-        
+
       char *wordTyped = malloc(sizeof(char)*(word->prefix_length+1));
       int i = word->prefix_length;
       wordTyped[word->prefix_length] = '\0';
@@ -308,7 +329,7 @@ int lets_tab_builtin(char **args)
         clrtobot();
         refresh();
       }
-      
+
       else
         printw("could not open file, saving aborted");
     }

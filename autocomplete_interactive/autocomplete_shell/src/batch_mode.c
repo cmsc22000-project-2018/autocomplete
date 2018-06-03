@@ -76,7 +76,7 @@ void print_children(int b, int n, char* s, char* dict_file)
 
 		//Lowercasing, from https://stackoverflow.com/questions/2661766/c-convert-a-mixed-case-string-to-all-lower-case
 		char* str = malloc(MAXPREFLEN * sizeof(char));
-		strncpy(str, s, strlen(s) + 1);
+		strcpy(str, s);
 		for(int i = 0; str[i] != '\0'; i++) {
         str[i] = tolower(str[i]);
     }
@@ -117,7 +117,8 @@ void print_children(int b, int n, char* s, char* dict_file)
         ft_putstr(" [");
         for (int i = 0; i < prefix->nComps && i < n; i++) {
 					  //Restore capitalization of prefix
-					  char* compi = prefix->completions[i];
+					  char* compi = malloc(strlen(prefix->completions[i]) + 1);
+						strcpy(compi, prefix->completions[i]);
 						for (int j = 0; j < prefLen; j++) {
 							  compi[j] = prefix->prefix[j];
 						}
