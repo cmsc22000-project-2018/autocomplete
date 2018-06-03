@@ -28,8 +28,10 @@ char** get_children_in_dict(char* s, char* dict_file)
 
 	int i = 0;
 	int j = 0;
+	printf("%s", s);
 	char** children = malloc(10*sizeof(char)); //Temporary hard value
 
+	/*
 	while((d->dict)->words[i] != NULL) {
 		//if the prefix is contained fully in a dictionary word
 		if(strncmp(s, (d->dict)->words[i], strlen(s)) == 0) {
@@ -41,6 +43,7 @@ char** get_children_in_dict(char* s, char* dict_file)
 			i++;
 		}
 	}
+	*/
 
 	return children;
 }
@@ -53,9 +56,10 @@ int num_children_in_dict(char* s, char* dict_file) {
 
        // assert((dict_exists(d, s)) == EXIT_SUCCESS);
 
-        int i = 0;
+        //int i = 0;
         int j = 0;
 
+        /*
         while((d->dict)->words[i] != NULL) {
                 //if the prefix is contained fully in a dictionary word
                 if(strncmp(s, (d->dict)->words[i], strlen(s)) == 0) {
@@ -65,6 +69,7 @@ int num_children_in_dict(char* s, char* dict_file) {
                         i++;
                 }
 	}
+	*/
 
 	return j;
 }
@@ -84,7 +89,7 @@ void print_children(int b, int n, char* s, char* dict_file)
     ft_putstr(prefix->prefix);
     ft_putstr(": ");
 
-
+    /*
     //If the prefix is relatively short, inserts ... to even out line length.
     int numDots = 0;
 		int prefLen = strlen(prefix->prefix);
@@ -128,6 +133,7 @@ void print_children(int b, int n, char* s, char* dict_file)
     }
 
     prefix_free(prefix);
+    */
 }
 
 //Function to enter batch autocomplete mode within the interactive framework

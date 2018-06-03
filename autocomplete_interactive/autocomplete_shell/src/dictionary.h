@@ -7,7 +7,7 @@
 #ifndef INCLUDE_DICTIONARY_H_
 #define INCLUDE_DICTIONARY_H_
 
-#include "mock_trie.h"
+#include "../api/include/trie.h"
 
 /* A dictionary struct, represented as a trie (mock trie for now) */
 typedef struct {
