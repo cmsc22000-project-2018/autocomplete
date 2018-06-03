@@ -12,6 +12,7 @@
 #include <assert.h>
 #include <unistd.h>
 #include "dictionary.h"
+#include "../api/include/trie.h"
 
 /* See dictionary.h */
 dict_t* dict_new() {
@@ -63,11 +64,14 @@ int dict_exists(dict_t *d, char *str) {
         return EXIT_FAILURE;
     }
 
-    int rc = trie_contains(d->dict, str);
+    int rc;
+    rc = trie_contains(d->dict, str);
+    //int rc = 0;
 
     if (rc == 0) {
         return EXIT_SUCCESS;
     }
+
 
     return EXIT_FAILURE;
 }
@@ -78,7 +82,9 @@ int dict_add(dict_t *d, char *str) {
         return EXIT_FAILURE;
     }
 
-    int rc = trie_insert(d->dict, str);
+    //int rc = trie_insert(d->dict, str);
+    int rc = 0;
+    //rc = trie_insert(d->dict, str);
 
     if (rc == 0) {
         return EXIT_SUCCESS;
@@ -109,6 +115,3 @@ int dict_read(dict_t *d, char *file) {
 
     return EXIT_SUCCESS;
 }
-
-
-

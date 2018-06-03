@@ -172,6 +172,7 @@ int lets_tab_builtin(char **args)
   int start = 0;
   int c;
   int x, y;
+  int j;
   initscr();    // Start Curses Mode
   cbreak();
   noecho();
