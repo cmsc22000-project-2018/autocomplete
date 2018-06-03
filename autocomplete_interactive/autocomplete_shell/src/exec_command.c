@@ -53,25 +53,25 @@ static int		check_builtins(char **command)
 {
 	if (ft_strequ(command[0], "exit"))
 		return (-1);
-	else if (ft_strequ(command[0], "echo"))
+	/*else if (ft_strequ(command[0], "echo"))
 		return (echo_builtin(command + 1));
 	else if (ft_strequ(command[0], "cd"))
 		return (cd_builtin(command + 1));
 	else if (ft_strequ(command[0], "setenv"))
 		return (setenv_builtin(command + 1));
 	else if (ft_strequ(command[0], "unsetenv"))
-		return (unsetenv_builtin(command + 1));
-	else if (ft_strequ(command[0], "hello"))
-	  return (hello_builtin(command + 1));
+		return (unsetenv_builtin(command + 1));*/
+	//else if (ft_strequ(command[0], "hello"))
+	  //return (hello_builtin(command + 1));
 	else if (ft_strequ(command[0], "interactive"))
 	  return (lets_tab_builtin(command + 1));
 	else if (ft_strequ(command[0], "batch"))
 	  return (batch_mode_builtin(command + 1));
-	else if (ft_strequ(command[0], "env"))
+	/*else if (ft_strequ(command[0], "env"))
 	{
 		print_env();
 		return (1);
-	}
+	}*/
 	return (0);
 }
 
@@ -87,7 +87,7 @@ static int		check_builtins(char **command)
 ** @return		0 if the first path is not an executable or if the command
 ** 				was not executed properly or 1 for the opposite
 */
-
+/*
 static int		is_executable(char *bin_path, struct stat f, char **command)
 {
 	if (f.st_mode & S_IFREG)
@@ -105,7 +105,7 @@ static int		is_executable(char *bin_path, struct stat f, char **command)
 	free(bin_path);
 	return (0);
 }
-
+*/
 /*
 ** Uses the first word of the input to search for an existing executable on the
 ** system, executes it if it found it and returns whether it found it or not
@@ -116,7 +116,7 @@ static int		is_executable(char *bin_path, struct stat f, char **command)
 ** @return		0 if the first word is not an executable or if the command was
 **				not executed properly or 1 for the opposite
 */
-
+/*
 static int		check_bins(char **command)
 {
 	int				i;
@@ -143,6 +143,7 @@ static int		check_bins(char **command)
 	ft_freestrarr(path);
 	return (0);
 }
+*/
 
 /*
 ** Executes a command and prints the result on the screen then returns whether
@@ -162,21 +163,15 @@ int				exec_command(char **command)
 	struct stat	f;
 	int			is_builtin;
 
-	if ((is_builtin = check_builtins(command)) == 1 || check_bins(command))
+	if ((is_builtin = check_builtins(command)) == 1)
 		return (0);
 	if (is_builtin < 0)
 		return (-1);
 	if (lstat(command[0], &f) != -1)
 	{
-		if (f.st_mode & S_IFDIR)
-		{
-			change_dir(command[0], 0);
-			return (0);
-		}
-		else if (f.st_mode & S_IXUSR)
+		if (f.st_mode & S_IXUSR)
 			return (run_cmd(ft_strdup(command[0]), command));
 	}
-	ft_putstr("minishell: command not found: ");
-	ft_putendl(command[0]);
+	ft_putstr("That is not a command!\n");
 	return (0);
 }
