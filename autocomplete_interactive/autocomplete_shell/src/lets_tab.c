@@ -21,18 +21,7 @@ struct word {
   int prefix_length;
 };
 
-//where autocomplete would go
-
-/* Jonas 05.06: eventually, we're going to have to change
- * "length" to the number of completions from the trie
- * for now though, I don't want to implement a dummy datastructure
- */
-// Yaffe 05.13
-// modified to implement a tab-based GUI.
-// Note that Shift-Tab is impossible in the ncurses C library as Shift-Tab is not registered differently from TAB
 // GUI works by tabbing through the options and the cursor cycles back to the frist when you go over. hit ENTER to select.
-
-
 char* autocomplete(char *word, char *dict, int length, int maxCompletions)
 {
   if (maxCompletions == -1)
@@ -128,17 +117,6 @@ int lets_tab_builtin(char **args)
 	} else {
 		dict = "./src/test_prefixes.txt";
 	}
-
-
-	/*
-	char *flag = args[1];
-	if (strncmp(flag, "-s", 2) == 0) {
-	  //placeholder for server
-		dict = args[2];
-	} else {
-		dict = args[2];
-	}
-	*/
 
   int length = 0;
   int total_length = 0;

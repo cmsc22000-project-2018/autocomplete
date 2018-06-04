@@ -37,21 +37,9 @@ int batch_mode_builtin(char **command);
 int lets_tab_builtin(char **command);
 
 /*
-** src/hello_cs220.c
-*/
-//int hello_builtin(char **command);
-
-/*
-** src/cd_builtin.c
-*/
-//void					change_dir(char *path, int print_path);
-//int						cd_builtin(char **command);
-
-/*
 ** src/display_prompt_msg.c
 */
 void					exit_shell(void);
-//char					*parse_home_path(char *path, int reverse_parse);
 void					display_prompt_msg(void);
 
 /*
