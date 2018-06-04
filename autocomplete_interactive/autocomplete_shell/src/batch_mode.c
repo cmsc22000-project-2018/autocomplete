@@ -48,7 +48,7 @@ int num_children_in_dict(char* s, char* dict_file) {
 	return 5; //Dummy placeholder value
 }
 
-
+//TODO: case for when dict_file is not provided, -d not selected, and connecting to redis dict
 //TODO: do we still need the prefix_t struct?
 // Prints the prefix, the number of children, if b==1 also the first n children.
 void print_children(int b, int n, char* s, char* dict_file)
