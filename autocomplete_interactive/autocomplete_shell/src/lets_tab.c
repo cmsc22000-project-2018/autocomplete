@@ -6,13 +6,15 @@ Program which implements a tab-based command
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <ctype.h>
 #include "minishell.h"
 #include "ll.h"
 #include "batch_mode.h"
 #include "dictionary.h"
 
-#define DEFAULT_DICTIONARY_FILE "./src/test_dict.txt"
+#define DEFAULT_DICTIONARY_FILE "./src/lcase_dict.txt"
 #define DEFAULT_AMT_COMPLETIONS 10
+#define DEFAULT_MAX_PREF_LEN 32
 
 
 // define struct for linked list library
@@ -25,74 +27,101 @@ struct word {
 char* autocomplete(char *word, char *dict, int length, int maxCompletions)
 {
   if (maxCompletions == -1)
-	  maxCompletions = DEFAULT_AMT_COMPLETIONS;
-	if (dict == NULL)
-	   dict = DEFAULT_DICTIONARY_FILE;
-	int len = strlen(dict);
+    maxCompletions = DEFAULT_AMT_COMPLETIONS;
+  if (dict == NULL)
+     dict = DEFAULT_DICTIONARY_FILE;
+  int len = strlen(dict);
   char *fileType = &dict[len-4];
-	if (strncmp(fileType, ".txt", 4) != 0)
-	  dict = DEFAULT_DICTIONARY_FILE;
+  if (strncmp(fileType, ".txt", 4) != 0)
+    dict = DEFAULT_DICTIONARY_FILE;
 
   int x, y;
-	int x_org, y_org; //used for clearing screen
+  int x_org, y_org; //used for clearing screen
   getyx(stdscr, y, x);
-	getyx(stdscr, y_org, x_org); //used for clearing screen
+  getyx(stdscr, y_org, x_org); //used for clearing screen
+
+  bool cap = false;
+  if (word[0] >= 65 && word[0] <= 90)
+    cap = true;
 
   printw("\nHere are suggestions to automplete \"%s\"\n", word);
 
-  char **children = get_children_in_dict(word, dict);
+  // Generate the lowercase version of the word
+  char* lWord = malloc(DEFAULT_MAX_PREF_LEN * sizeof(char));
+  strcpy(lWord, word);
+  for(int i = 0; lWord[i] != '\0'; i++) {
+      lWord[i] = tolower(lWord[i]);
+  }
+
+  char **children = get_children_in_dict(lWord, dict);
+
   // In order to restrict the number of options printed, change "num_children" to
   // some number that was inputed
-  int num_children = num_children_in_dict(word, dict);
-  int i;
-	int childrenToDisplay;
-	if (maxCompletions > num_children)
-	  childrenToDisplay = num_children;
-	else
-	  childrenToDisplay = maxCompletions;
-  for (i = 0; i < childrenToDisplay; i++)
-    printw("%d: %s\n", i, children[i]);
-	if (num_children > maxCompletions)
-	  printw("Printed [%d] completions out of [%d] available\n", maxCompletions, num_children);
+  int num_children = num_children_in_dict(lWord, dict);
 
-	//print this after autocomplete options to make tabbing less messy
-	//if (length > 10) {
+  // Stores the portion of the child that comes after the typed prefix_t
+  char** partialChildren = malloc(num_children);
+
+  int i;
+  int childrenToDisplay;
+  if (maxCompletions > num_children)
+    childrenToDisplay = num_children;
+  else
+    childrenToDisplay = maxCompletions;
+  for (i = 0; i < childrenToDisplay; i++) {
+
+    //create pointer to "the rest" of the word
+    partialChildren[i] = malloc(strlen(children[i]) + 1);
+    strcpy(partialChildren[i], children[i]);
+    partialChildren[i] += (strlen(word) * sizeof(char));
+    //prints the word, as entered, plus the 'rest' from the dictionary
+    printw("%d: %s%s\n", i, word, partialChildren[i]);
+  }
+  if (num_children > maxCompletions)
+    printw("Printed [%d] completions out of [%d] available\n", maxCompletions, num_children);
+
+  //print this after autocomplete options to make tabbing less messy
+  //if (length > 10) {
   //  printw("Only the first ten possibilities displayed\n");
   //  length = 10;
   //}
 
   int c;
-	y++;
-	int moved = 0; //keep track of how many tabs hit for cycling
-	int og_y = y; //used for moving cursor to correct position for tab-completion
+  y++;
+  int moved = 0; //keep track of how many tabs hit for cycling
+  int og_y = y; //used for moving cursor to correct position for tab-completion
 
   //move to position
   x = 0;
-	y++;
-	moved++;
-	wmove(stdscr, y, x);
+  y++;
+  moved++;
+  wmove(stdscr, y, x);
   // tab through options, hit enter to select
   while(10 != (c = getch())) {
-		if(c == 9) {
-			if (moved < childrenToDisplay) {
-				y++;
-				moved++;
-			} else {
-				y = og_y+1;
-				moved = 1;
-			}
-			wmove(stdscr, y, x);
-		}
-	}
-	c = mvwinch(stdscr, y, x);
+    if(c == 9) {
+      if (moved < childrenToDisplay) {
+        y++;
+        moved++;
+      } else {
+        y = og_y+1;
+        moved = 1;
+      }
+      wmove(stdscr, y, x);
+    }
+  }
+  c = mvwinch(stdscr, y, x);
 
   //clear autocomplete portion of screen
   wmove(stdscr, y_org, (x_org-length)); // prints over the typed word
   wrefresh(stdscr);
-  printw("%s", children[moved-1]);
+  printw("%s%s", word, partialChildren[moved-1]);
   clrtobot();
 
+  if (cap == true)
+    children[moved-1][0] -= ('a' - 'A');
+
   return children[moved-1];
+
 }
 
 // command to enter interactive autocomplete mode
@@ -212,6 +241,7 @@ int lets_tab_builtin(char **args)
         else
           length = 0;
     }
+    
 
     // Pressing '`' saves the screen to a file
     if (c == 96) {
