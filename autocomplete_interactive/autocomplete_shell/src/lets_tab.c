@@ -12,7 +12,7 @@ Program which implements a tab-based command
 #include "batch_mode.h"
 #include "dictionary.h"
 
-#include "../api/include/trie.h"
+// #include "../api/include/trie.h"
 #define DEFAULT_DICTIONARY_FILE "./src/lcase_dict.txt"
 #define DEFAULT_AMT_COMPLETIONS 10
 #define DEFAULT_MAX_PREF_LEN 32
