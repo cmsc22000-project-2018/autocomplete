@@ -10,41 +10,27 @@ Program which implements batch mode autocomplete within the same framework as ba
 #include "prefix.h"
 #include "batch_mode.h"
 #include "dictionary.h"
-
+#include "../api/include/trie.h"
 
 #define SHOWNWORDS 10
 #define MAXPREFLEN 32
 
+
 // See batch_mode.h
-char** get_children_in_dict(char* s, char* dict_file)
+char** get_n_children_in_dict(char* s, char* dict_file, int n)
 {
 	dict_t *d = dict_new();
 	int rc = dict_read(d, dict_file);
 	assert (rc == EXIT_SUCCESS);
 
-	//TODO: function that checks whether given string is a valid prefix
-	// since a prefix could exist that isn't a full word in the dictionary
-	//assert((dict_exists(d, s)) == EXIT_SUCCESS);
-
+	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
+	
 	int i = 0;
 	int j = 0;
 	printf("%s", s);
-	char** children = malloc(10*sizeof(char)); //Temporary hard value
-
-	/*
-	while((d->dict)->words[i] != NULL) {
-		//if the prefix is contained fully in a dictionary word
-		if(strncmp(s, (d->dict)->words[i], strlen(s)) == 0) {
-			children[j] = malloc(sizeof((d->dict)->words[i] + 1));
-			strcpy(children[j], (d->dict)->words[i]);
-			j++;
-			i++;
-		} else {
-			i++;
-		}
-	}
-	*/
-
+	char** children = trie_approx(d->dict, s, 2, n); 
+		//default for max_edit_dist in TRIE.APPROX is 2
+	
 	return children;
 }
 
@@ -54,31 +40,21 @@ int num_children_in_dict(char* s, char* dict_file) {
         int rc = dict_read(d, dict_file);
         assert (rc == EXIT_SUCCESS);
 
-       // assert((dict_exists(d, s)) == EXIT_SUCCESS);
+	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
 
-        //int i = 0;
-        int j = 0;
+	//TODO: waiting for API team to write a version of TRIE.COMPLETIONS function
+	//May try to write a version of it myself
 
-        /*
-        while((d->dict)->words[i] != NULL) {
-                //if the prefix is contained fully in a dictionary word
-                if(strncmp(s, (d->dict)->words[i], strlen(s)) == 0) {
-                        j++;
-                        i++;
-                } else {
-                        i++;
-                }
-	}
-	*/
-
-	return j;
+	return 5; //Dummy placeholder value
 }
 
+
+//TODO: do we still need the prefix_t struct?
 // Prints the prefix, the number of children, if b==1 also the first n children.
 void print_children(int b, int n, char* s, char* dict_file)
 {
     prefix_t* prefix;
-    char** children = get_children_in_dict(s, dict_file);
+    char** children = get_n_children_in_dict(s, dict_file, n);
     int num_children = num_children_in_dict(s, dict_file);
     prefix = prefix_new(s, children, num_children);
 
@@ -89,7 +65,7 @@ void print_children(int b, int n, char* s, char* dict_file)
     ft_putstr(prefix->prefix);
     ft_putstr(": ");
 
-    /*
+    
     //If the prefix is relatively short, inserts ... to even out line length.
     int numDots = 0;
 		int prefLen = strlen(prefix->prefix);
@@ -133,7 +109,7 @@ void print_children(int b, int n, char* s, char* dict_file)
     }
 
     prefix_free(prefix);
-    */
+   
 }
 
 //Function to enter batch autocomplete mode within the interactive framework
@@ -141,7 +117,7 @@ int batch_mode_builtin(char **args)
 {
 	int showWords = 0;
 	int nWords = SHOWNWORDS;
-	char* dictionary; //Once we can, should be initialized to the redis dictionary
+	char* dictionary = "trie123az"; //Once we can, should be initialized to the redis dictionary
 	FILE* prefixFile;
 	int fileSet = 0;
 
@@ -162,7 +138,8 @@ int batch_mode_builtin(char **args)
 			if (!strncmp(args[i], "-d", 2)) {
 					assert(args[i + 1] != NULL);
 				  //  dictionary = fopen(args[i + 1], "r");
-					dictionary = malloc(sizeof(args[i+1]) + 1);
+					dictionary = calloc(sizeof(args[i+1]) + 1, sizeof(char));
+						//TODO: is this the right use of calloc?? 
 	        strcpy(dictionary, args[i+1]);
 			}
 			if (!strncmp(args[i], "-f", 2)) {
