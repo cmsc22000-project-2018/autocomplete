@@ -131,7 +131,7 @@ int batch_mode_builtin(char **args)
 {
 	int showWords = 0;
 	int nWords = SHOWNWORDS;
-	char* dictionary = "trie123az"; //Once we can, should be initialized to the redis dictionary
+	char* dictionary = "/src/lcase_dict.txt"; //Once we can, should be initialized to the redis dictionary
 	FILE* prefixFile;
 	int fileSet = 0;
 
