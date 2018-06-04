@@ -11,6 +11,7 @@ Program which implements a tab-based command
 #include "batch_mode.h"
 #include "dictionary.h"
 
+#include "../api/include/trie.h"
 #define DEFAULT_DICTIONARY_FILE "./src/test_dict.txt"
 #define DEFAULT_AMT_COMPLETIONS 10
 
@@ -40,7 +41,7 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
 
   printw("\nHere are suggestions to automplete \"%s\"\n", word);
 
-  char **children = get_children_in_dict(word, dict);
+  char **children = get_n_children_in_dict(word, dict, maxCompletions);
   // In order to restrict the number of options printed, change "num_children" to
   // some number that was inputed
   int num_children = num_children_in_dict(word, dict);

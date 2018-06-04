@@ -5,3 +5,6 @@
 [submodule "lsh"]
 	path = program_examples/lsh
 	url = https://github.com/brenns10/lsh.git
+[submodule "autocomplete_interactive/autocomplete_shell/api"]
+	path = autocomplete_interactive/autocomplete_shell/api
+	url = https://github.com/cmsc22000-project-2018/api.git
