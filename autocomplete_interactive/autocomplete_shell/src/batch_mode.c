@@ -6,6 +6,7 @@ Program which implements batch mode autocomplete within the same framework as ba
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <ctype.h>
 #include "minishell.h"
 #include "prefix.h"
 #include "batch_mode.h"
@@ -53,8 +54,16 @@ int num_children_in_dict(char* s, char* dict_file) {
 void print_children(int b, int n, char* s, char* dict_file)
 {
     prefix_t* prefix;
-    char** children = get_n_children_in_dict(s, dict_file, n);
-    int num_children = num_children_in_dict(s, dict_file);
+
+		//Lowercasing, from https://stackoverflow.com/questions/2661766/c-convert-a-mixed-case-string-to-all-lower-case
+		char* str = malloc(MAXPREFLEN * sizeof(char));
+		strcpy(str, s);
+		for(int i = 0; str[i] != '\0'; i++) {
+        str[i] = tolower(str[i]);
+    }
+
+    char** children = get_n_children_in_dict(str, dict_file,n);
+    int num_children = num_children_in_dict(str, dict_file);
     prefix = prefix_new(s, children, num_children);
 
     //Currently children ins a memory leak because get_children_in_dict mallocs strings that are never freed
@@ -88,7 +97,13 @@ void print_children(int b, int n, char* s, char* dict_file)
 			  ft_putstr(",");
         ft_putstr(" [");
         for (int i = 0; i < prefix->nComps && i < n; i++) {
-            ft_putstr(prefix->completions[i]);
+					  //Restore capitalization of prefix
+					  char* compi = malloc(strlen(prefix->completions[i]) + 1);
+						strcpy(compi, prefix->completions[i]);
+						for (int j = 0; j < prefLen; j++) {
+							  compi[j] = prefix->prefix[j];
+						}
+            ft_putstr(compi);
             if (i != prefix->nComps - 1) {
                 ft_putstr(", ");
             }
@@ -125,13 +140,14 @@ int batch_mode_builtin(char **args)
 		Currently uses asserts to avoid reading missing arguments,
 		we may want to make this more robust later.
 	*/
-	for (int i = 0; args[i] != NULL; i+=2) {
+	for (int i = 0; args[i] != NULL; i++) {
 			if (!strncmp(args[i], "-w", 2)) {
 					showWords = 1;
 			}
 			if (!strncmp(args[i], "-n", 2)) {
 					assert(args[i + 1] != NULL);
 					nWords = atoi(args[i + 1]);
+					i++;
 			}
 			if (!strncmp(args[i], "-d", 2)) {
 					assert(args[i + 1] != NULL);
@@ -139,15 +155,18 @@ int batch_mode_builtin(char **args)
 					dictionary = calloc(sizeof(args[i+1]) + 1, sizeof(char));
 						//TODO: is this the right use of calloc?? 
 	        strcpy(dictionary, args[i+1]);
+					i++;
 			}
 			if (!strncmp(args[i], "-f", 2)) {
 					assert(args[i + 1] != NULL);
 					prefixFile = fopen(args[i + 1], "r");
 					fileSet = 1;
+					i++;
 			}
 			if (!strncmp(args[i], "-o", 2)) {
 					assert(args[i + 1] != NULL);
 					freopen(args[i + 1], "w", stdout); //Sets stdout to be the file instead of the terminal
+					i++;
 			}
 	}
     if (fileSet) {

@@ -13,12 +13,12 @@
  ```
  To call the tool, use the command
  ```
- ./autocomplete -b <-w> <-n NUM> <-d DICT> -f FILE
+ ./autocomplete -b <-w> <-n NUM> <-d DICT> -f FILE <-o OUT>
  ```
  Only the -b and -f FILE flags are required, all others are optional.
 
  The -b flag indicates that the tool is being used in batch mode.
- 
+
  The -w flag, if present, enables the display of the first n completions of each prefix in the file.
 
  The -n flag changes the number of completions shown from its default value, 10, to the value specified (NUM).
@@ -26,6 +26,8 @@
  The -d flag allows the setting of a non-standard dictionary, and the DICT file can be specified by e.g. ./dictionary.text
 
  The -f flag is for the file of prefixes to be declared, specified by e.g. ./prefixes.text
+
+ The -o flag allows for the output to be placed in a file rather than printed to the terminal, specified by e.g. ./out.txt
 
  The output is of the form
  ```
