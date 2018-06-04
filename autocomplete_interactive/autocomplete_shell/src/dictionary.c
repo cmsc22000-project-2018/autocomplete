@@ -96,7 +96,7 @@ int dict_add(dict_t *d, char *str) {
 int dict_read(dict_t *d, char *file) {
 
     // From here: https://stackoverflow.com/questions/16400886/reading-from-a-file-word-by-word
-    char buffer[1024];
+    char buffer[61];
     FILE *f = fopen(file, "r");
 
     if (f == NULL) {
@@ -104,7 +104,7 @@ int dict_read(dict_t *d, char *file) {
        return EXIT_FAILURE;
     }
 
-    while (fscanf(f, "%1023s", buffer) == 1) {
+    while (fscanf(f, "%100s", buffer) == 1) {
         if (dict_add(d, buffer) != EXIT_SUCCESS) {
 		fprintf(stderr, "dict_read: EXIT_FAILURE, dict_add failed\n");
             return EXIT_FAILURE;

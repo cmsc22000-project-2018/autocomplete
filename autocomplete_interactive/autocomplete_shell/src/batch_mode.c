@@ -13,6 +13,7 @@ Program which implements batch mode autocomplete within the same framework as ba
 #include "dictionary.h"
 
 #include "../api/include/trie.h"
+#include "../api/lib/redis-tries/include/trie.h"
 
 #define SHOWNWORDS 10
 #define MAXPREFLEN 32
@@ -21,6 +22,7 @@ Program which implements batch mode autocomplete within the same framework as ba
 // See batch_mode.h
 char** get_n_children_in_dict(char* s, char* dict_file, int n)
 {
+	
 	dict_t *d = dict_new();
 	int rc = dict_read(d, dict_file);
 	assert (rc == EXIT_SUCCESS);
@@ -32,20 +34,22 @@ char** get_n_children_in_dict(char* s, char* dict_file, int n)
 		//default for max_edit_dist in TRIE.APPROX is 2
 	
 	return children;
+	
 }
 
 // See batch_mode.h
-int num_children_in_dict(char* s, char* dict_file) {
+int num_children_in_dict(char* s, char* dict_file) 
+{
+	
 	dict_t *d = dict_new();
         int rc = dict_read(d, dict_file);
         assert (rc == EXIT_SUCCESS);
 
 	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
 
-	//TODO: waiting for API team to write a version of TRIE.COMPLETIONS function
-	//May try to write a version of it myself
+	int c = trie_count_completion(d->dict, s);
 
-	return 5; //Dummy placeholder value
+	return c;
 }
 
 //TODO: case for when dict_file is not provided, -d not selected, and connecting to redis dict
