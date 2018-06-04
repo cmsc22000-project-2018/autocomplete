@@ -14,28 +14,6 @@ Program which implements a tab-based command
 #define DEFAULT_DICTIONARY_FILE "./src/test_dict.txt"
 #define DEFAULT_AMT_COMPLETIONS 10
 
-/*
-Checks if the input has two or more arguments and acts accordingly
-
-@param args The list of arguments to check
-@return 0 if there is no second argument, 1 if there is
-*/
-
-static int has_n_args(char **args, int n)
-{
-	int i;
-  for (i = 1; i <= n; i++)
-  {
-    if (i == n) {
-      ft_putendl("hello: too many arguments");
-      return (1);
-    }
-    if (!args[i])
-      break;
-  }
-
-	return (0);
-}
 
 // define struct for linked list library
 struct word {
@@ -43,18 +21,7 @@ struct word {
   int prefix_length;
 };
 
-//where autocomplete would go
-
-/* Jonas 05.06: eventually, we're going to have to change
- * "length" to the number of completions from the trie
- * for now though, I don't want to implement a dummy datastructure
- */
-// Yaffe 05.13
-// modified to implement a tab-based GUI.
-// Note that Shift-Tab is impossible in the ncurses C library as Shift-Tab is not registered differently from TAB
 // GUI works by tabbing through the options and the cursor cycles back to the frist when you go over. hit ENTER to select.
-
-
 char* autocomplete(char *word, char *dict, int length, int maxCompletions)
 {
   if (maxCompletions == -1)
@@ -135,29 +102,21 @@ int lets_tab_builtin(char **args)
   int amountOfArgs;
 	for (amountOfArgs = 0; args[amountOfArgs] != NULL; amountOfArgs++);
 
-  if (has_n_args(args, 2) == 1) {} //does nothing for now
   struct word *word = NULL; //list
 
 	//bool server = false;
 	char *dict;
 
-	if (strncmp(args[0], "-s", 2) == 0) {
-    dict = "./src/test_prefixes.txt"; //placeholder for server location of dictionary
-		//server = true;
+	if (args[0] != NULL) {
+		if (strncmp(args[0], "-s", 2) == 0) {
+	    dict = "./src/test_prefixes.txt"; //placeholder for server location of dictionary
+			//server = true;
+		} else {
+			dict = args[1];
+		}
 	} else {
-		dict = args[1];
+		dict = "./src/test_prefixes.txt";
 	}
-
-
-	/*
-	char *flag = args[1];
-	if (strncmp(flag, "-s", 2) == 0) {
-	  //placeholder for server
-		dict = args[2];
-	} else {
-		dict = args[2];
-	}
-	*/
 
   int length = 0;
   int total_length = 0;
@@ -173,7 +132,7 @@ int lets_tab_builtin(char **args)
     printw("If you want to save your work to a text file, press ` .\n");
     printw("To exit interactive mode, press ~ . Press enter to begin!");
     int c_start;
-    while (10 != (c_start = getch())) 
+    while (10 != (c_start = getch()))
       ;
     clear();
     start = 1;
@@ -196,7 +155,7 @@ int lets_tab_builtin(char **args)
     }
 
     if (c == 9 && length > 0) {
-        
+
       char *wordTyped = malloc(sizeof(char)*(word->prefix_length+1));
       int i = word->prefix_length;
       wordTyped[word->prefix_length] = '\0';
@@ -207,9 +166,23 @@ int lets_tab_builtin(char **args)
       }
 
 		  int maxCompletions = -1;
-		  if (amountOfArgs >= 3)
-				if(args[2] != NULL)
-				  maxCompletions = atoi(args[2]);
+			bool n_flag_found = false;
+			int flag = 0;
+			for (; flag < amountOfArgs; flag++) {
+				if (args[flag] != NULL) {
+					if (strncmp(args[flag], "-n", 2) == 0){
+				    n_flag_found = true;
+					  break;
+					}
+				}
+			}
+
+			if (n_flag_found == true)
+			  if (args[flag+1] != NULL)
+				  maxCompletions = atoi(args[flag+1]);
+		  //if (amountOfArgs >= 3)
+				//if(args[2] != NULL)
+				  //maxCompletions = atoi(args[2]);
       char *complete_word = autocomplete(wordTyped, dict, length, maxCompletions);
       length = 0;
       for (i = 0; complete_word[i] != '\0'; i++) {
@@ -308,7 +281,7 @@ int lets_tab_builtin(char **args)
         clrtobot();
         refresh();
       }
-      
+
       else
         printw("could not open file, saving aborted");
     }
