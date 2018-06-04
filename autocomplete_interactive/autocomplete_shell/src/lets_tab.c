@@ -241,6 +241,7 @@ int lets_tab_builtin(char **args)
         else
           length = 0;
     }
+    
 
     // Pressing '`' saves the screen to a file
     if (c == 96) {
