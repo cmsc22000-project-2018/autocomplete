@@ -67,12 +67,6 @@ static char		*parse_input(char *input)
 				input[i + 1] != '$')
 				i++;
 		}
-		else if (((i != 0 && IS_SPACE(input[i - 1])) || i == 0) &&
-			input[i] == '~')
-		{
-			new = ft_strjoincl(new, parse_home_path(input + i, 1), 1);
-			i += ft_strlen(input + i) - 1;
-		}
 		else
 			new = ft_strjoinchcl(new, input[i]);
 	}
@@ -206,13 +200,20 @@ int				main(int ac, char **av, char **envv)
 	else if (!strncmp(av[1], "-b", 2)) {
 			firstCommand = 1;
 	}
+	//Help 'mode'
+	else if (!strncmp(av[1], "-h", 2) || !strncmp(av[1], "help", 4)) {
+		  firstCommand = 2;
+			printf("For full documentation and help, and details on batch mode, please see the readme at \nhttps://github.com/cmsc22000-project-2018/autocomplete \n");
+			printf("To get started with interactive mode, just type ./autocomplete\n");
+			shouldExit = 1;
+	}
 
 	init_envv(ac, av, envv);
 	while (1)
 	{
     if (firstCommand == 0) {
       // Jonas 05.17: Edited to take in more than one argument
-			display_prompt_msg();
+			//display_prompt_msg();
       char* interactive = malloc(sizeof(char) * 13);
       strcpy(interactive, "interactive");
 			char* arguments = concatenate(ac - 2, &(av[2]), " ");
