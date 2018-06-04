@@ -25,8 +25,6 @@ char** get_n_children_in_dict(char* s, char* dict_file, int n)
 
 	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
 	
-	int i = 0;
-	int j = 0;
 	printf("%s", s);
 	char** children = trie_approx(d->dict, s, 2, n); 
 		//default for max_edit_dist in TRIE.APPROX is 2

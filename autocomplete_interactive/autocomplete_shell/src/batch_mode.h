@@ -8,7 +8,7 @@
 #include "prefix.h"
 
 // Given a prefix and a dictionary file, returns a given number of valid children
-char** get_n_children_in_dict(char* s, char* dict_file);
+char** get_n_children_in_dict(char* s, char* dict_file, int n);
 
 // Given a prefix and a dictionary file, returns a count of all valid children
 int num_children_in_dict(char* s, char* dict_file);
