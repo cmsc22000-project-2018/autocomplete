@@ -67,12 +67,6 @@ static char		*parse_input(char *input)
 				input[i + 1] != '$')
 				i++;
 		}
-		else if (((i != 0 && IS_SPACE(input[i - 1])) || i == 0) &&
-			input[i] == '~')
-		{
-			new = ft_strjoincl(new, parse_home_path(input + i, 1), 1);
-			i += ft_strlen(input + i) - 1;
-		}
 		else
 			new = ft_strjoinchcl(new, input[i]);
 	}
@@ -219,7 +213,7 @@ int				main(int ac, char **av, char **envv)
 	{
     if (firstCommand == 0) {
       // Jonas 05.17: Edited to take in more than one argument
-			display_prompt_msg();
+			//display_prompt_msg();
       char* interactive = malloc(sizeof(char) * 13);
       strcpy(interactive, "interactive");
 			char* arguments = concatenate(ac - 2, &(av[2]), " ");
