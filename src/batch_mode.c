@@ -12,7 +12,8 @@ Program which implements batch mode autocomplete within the same framework as ba
 #include "batch_mode.h"
 #include "dictionary.h"
 
-//#include "../api/include/trie.h"
+#include "../api/include/trie.h"
+//#include "../api/src/trie/trie.c"
 
 #define SHOWNWORDS 10
 #define MAXPREFLEN 32
@@ -22,6 +23,7 @@ Program which implements batch mode autocomplete within the same framework as ba
 // See batch_mode.h
 char** get_n_children_in_dict(char* s, char* dict_file, int n)
 {
+	printf("entering get_n_children_in_dict\n");
 //	char *dict = malloc(UNIX_MAX_PATH * sizeof(char *));
   //      strcpy(dict, dict_file);
 
@@ -29,6 +31,7 @@ char** get_n_children_in_dict(char* s, char* dict_file, int n)
         int msg;
 
         if(strcmp(dict_file, "default") == 0) {
+		printf("get_n_child_dict: about to initialize to default dict\n");
                 new_dict = dict_official();
 
                 if (new_dict == NULL) {
@@ -37,6 +40,7 @@ char** get_n_children_in_dict(char* s, char* dict_file, int n)
                         msg = EXIT_SUCCESS;
                 }
         } else {
+		printf("get_n_child_d: about to create new custom dict\n");
                 new_dict = dict_new();
                 msg = dict_read(new_dict, dict_file);
         	assert (msg == EXIT_SUCCESS);
@@ -51,9 +55,11 @@ char** get_n_children_in_dict(char* s, char* dict_file, int n)
 //	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
 	
 	printf("%s", s);
-	char** children = trie_approx(new_dict->dict, s, 2, n); 
+//	char** children = trie_approx(new_dict->dict, s, 2, n); 
 		//default for max_edit_dist in TRIE.APPROX is 2
-	
+	printf("get_n_child_d: about to call dict_suggestions\n");
+	char** children = dict_suggestions(new_dict, s, 2, n);
+
 	return children;
 	
 }
@@ -61,7 +67,7 @@ char** get_n_children_in_dict(char* s, char* dict_file, int n)
 // See batch_mode.h
 int num_children_in_dict(char* s, char* dict_file) 
 {
-	
+	printf("entering num_children_in_dict\n");
        // char *dict = malloc(UNIX_MAX_PATH * sizeof(char *));
        // strcpy(dict, dict_file);
 
@@ -69,6 +75,7 @@ int num_children_in_dict(char* s, char* dict_file)
         int msg;
 
         if(strcmp(dict_file, "default") == 0) {
+		printf("num_child_in_dict: about to initialize default dict\n");
                 new_dict = dict_official();
 
                 if (new_dict == NULL) {
@@ -77,6 +84,7 @@ int num_children_in_dict(char* s, char* dict_file)
                         msg = EXIT_SUCCESS;
                 }
         } else {
+		printf("num_child_in_dict: about to initialize custom dict\n");
                 new_dict = dict_new();
                 msg = dict_read(new_dict, dict_file);
         	assert(msg == EXIT_SUCCESS);	
@@ -88,7 +96,7 @@ int num_children_in_dict(char* s, char* dict_file)
         }
 
 //	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
-
+	printf("num_child_in_dict: about to call trie_completions\n");
 	int c = trie_completions(new_dict->dict, s);
 
 	return c;
@@ -99,6 +107,7 @@ int num_children_in_dict(char* s, char* dict_file)
 // Prints the prefix, the number of children, if b==1 also the first n children.
 void print_children(int b, int n, char* s, char* dict_file)
 {
+	printf("entering print_children\n");
     prefix_t* prefix;
 
 		//Lowercasing, from https://stackoverflow.com/questions/2661766/c-convert-a-mixed-case-string-to-all-lower-case
@@ -107,7 +116,7 @@ void print_children(int b, int n, char* s, char* dict_file)
 		for(int i = 0; str[i] != '\0'; i++) {
         str[i] = tolower(str[i]);
     }
-
+	printf("print_children: about to call get_n_ch_d and num_ch_d\n");
     char** children = get_n_children_in_dict(str, dict_file,n);
     int num_children = num_children_in_dict(str, dict_file);
     prefix = prefix_new(s, children, num_children);
@@ -175,6 +184,7 @@ void print_children(int b, int n, char* s, char* dict_file)
 //Function to enter batch autocomplete mode within the interactive framework
 int batch_mode_builtin(char **args)
 {
+	printf("entering batch_mode_builtin\n");
 	int showWords = 0;
 	int nWords = SHOWNWORDS;
 	char* dictionary = "/src/lcase_dict.txt"; //Once we can, should be initialized to the redis dictionary

@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include "dictionary.h"
 
+//#include "../api/src/trie/trie.c"
+
 /* See dictionary.h */
 dict_t* dict_new() {
 	printf("entering dict_new\n");
@@ -29,7 +31,7 @@ dict_t* dict_new() {
     }
 
     rc = dict_init(d);
-    if (rc != EXIT_SUCCESS) {i
+    if (rc != EXIT_SUCCESS) {
 	printf("dict_new: dict_init failed\n");
         return NULL;
     }
@@ -44,7 +46,7 @@ int dict_init(dict_t *d) {
     assert(d != NULL);
 
     trie_t *t = trie_new("dict");
-    if (t == NULL) {i
+    if (t == NULL) {
 	printf("dict_init: trie_new failed\n");
         return EXIT_FAILURE;
     }
@@ -70,7 +72,7 @@ int dict_free(dict_t *d) {
 dict_t* dict_official() {
 	printf("entering dict_official()\n");
 
-	dict_d *d;
+	dict_t *d;
 
 	d = malloc(sizeof(dict_t));
 
@@ -118,7 +120,7 @@ int dict_add(dict_t *d, char *str) {
     }
 
 
-	if(strnlen(str, MAXSTRLEN+1) == MAXSTRNLEN+1) {
+	if(strnlen(str, MAXSTRLEN+1) == MAXSTRLEN+1) {
 		printf("dict_add: returning EXITFAILURE\n");
 		return EXIT_FAILURE;
 	}
@@ -162,7 +164,7 @@ int dict_read(dict_t *d, char *file) {
 
 
 /* See dictionary.h */
-cha **dict_suggestions(dict_t *d, char *str, int max_edits, int n) {
+char **dict_suggestions(dict_t *d, char *str, int max_edits, int n) {
 	printf("entering dict_suggestions\n");
  if (d == NULL || d->dict == NULL || str == NULL) {
          printf("dict_suggestions returning EXIT_FAILURE\n");

@@ -9,6 +9,7 @@
 
 #include "../api/include/trie.h"
 #define MAXSTRLEN 60
+#define UNIX_MAX_PATH 4096
 
 /* A dictionary struct, represented as a trie (mock trie for now) */
 typedef struct {

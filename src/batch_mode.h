@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "prefix.h"
+
 #include "../api/include/trie.h"
 
 
