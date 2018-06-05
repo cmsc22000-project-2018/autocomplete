@@ -13,7 +13,6 @@ Program which implements batch mode autocomplete within the same framework as ba
 #include "dictionary.h"
 
 #include "../api/include/trie.h"
-#include "../api/lib/redis-tries/include/trie.h"
 
 #define SHOWNWORDS 10
 #define MAXPREFLEN 32
