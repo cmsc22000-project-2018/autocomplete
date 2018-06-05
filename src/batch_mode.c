@@ -30,7 +30,7 @@ char** get_n_children_in_dict(char* s, dict_t* d, int n)
         //log_debug("dict_read: EXIT SUCCESS");
 	assert(d != NULL);
         assert(d->dict != NULL);
-        log_trace("get_n_children_in_dict: checking if '%s' is in dict");
+        log_trace("get_n_children_in_dict: checking if '%s' is in dict", s);
         assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
 	log_debug("get_n_children_in_dict: word is contained in trie");
 	printf("%s", s);
