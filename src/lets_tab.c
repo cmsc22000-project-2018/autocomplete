@@ -137,7 +137,7 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
 // command to enter interactive autocomplete mode
 int lets_tab_builtin(char **args)
 {
-
+	printf("entering lets_tab_builtin\n");
   int amountOfArgs;
 	for (amountOfArgs = 0; args[amountOfArgs] != NULL; amountOfArgs++);
 

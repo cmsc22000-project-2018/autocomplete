@@ -18,7 +18,7 @@ Program which implements batch mode autocomplete within the same framework as ba
 #define SHOWNWORDS 10
 #define MAXPREFLEN 32
 #define UNIX_MAX_PATH 4096
-
+#define DEFAULT_DICTIONARY_FILE "default"
 
 // See batch_mode.h
 char** get_n_children_in_dict(char* s, char* dict_file, int n)
@@ -187,7 +187,7 @@ int batch_mode_builtin(char **args)
 	printf("entering batch_mode_builtin\n");
 	int showWords = 0;
 	int nWords = SHOWNWORDS;
-	char* dictionary = "/src/lcase_dict.txt"; //Once we can, should be initialized to the redis dictionary
+	char* dictionary = malloc(UNIX_MAX_PATH * sizeof(char *));//Once we can, should be initialized to the redis dictionary
 	FILE* prefixFile;
 	int fileSet = 0;
 
@@ -208,10 +208,15 @@ int batch_mode_builtin(char **args)
 			if (!strncmp(args[i], "-d", 2)) {
 					assert(args[i + 1] != NULL);
 				  //  dictionary = fopen(args[i + 1], "r");
-					dictionary = calloc(sizeof(args[i+1]) + 1, sizeof(char));
+//					dictionary = calloc(sizeof(args[i+1]) + 1, sizeof(char));
 						//TODO: is this the right use of calloc?? 
-	        strcpy(dictionary, args[i+1]);
-					i++;
+	     		if(strcmp(args[i+1], DEFAULT_DICTIONARY_FILE) ==0) {
+				strcpy(dictionary, DEFAULT_DICTIONARY_FILE);
+				i++;
+			} else { 
+				 strcpy(dictionary, args[i+1]);
+				i++;
+			}
 			}
 			if (!strncmp(args[i], "-f", 2)) {
 					assert(args[i + 1] != NULL);
