@@ -13,7 +13,6 @@ Program which implements batch mode autocomplete within the same framework as ba
 #include "dictionary.h"
 
 #include "../api/include/trie.h"
-#include "../api/lib/redis-tries/include/trie.h"
 
 #define SHOWNWORDS 10
 #define MAXPREFLEN 32
@@ -22,10 +21,29 @@ Program which implements batch mode autocomplete within the same framework as ba
 // See batch_mode.h
 char** get_n_children_in_dict(char* s, char* dict_file, int n)
 {
-	
-	dict_t *d = dict_new();
-	int rc = dict_read(d, dict_file);
-	assert (rc == EXIT_SUCCESS);
+	char *dict = malloc(UNIX_MAX_PATH * sizeof(char *));
+	strcpy(dict, dict_file);
+
+	dict_t *new_dict;
+	int msg;
+
+	if(strcmp(dict, "default") == 0) {
+		new_dict = dict_official();
+		
+		if (new_dict == NULL) {
+			msg = EXIT_FAILURE;
+		} else {
+			msg = EXIT_SUCCESS;
+		}
+	} else {
+		new_dict = dict_new();
+		msg = dict_read(new_dict, dict);
+	}
+
+	if (msg == EXIT_FAILURE) {
+		fprintf(stderr, "get_n_children_in_dict: invalid dict file\n");
+		exit(0);
+	}
 
 	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
 	
@@ -40,24 +58,41 @@ char** get_n_children_in_dict(char* s, char* dict_file, int n)
 // See batch_mode.h
 int num_children_in_dict(char* s, char* dict_file) 
 {
-	
-	dict_t *d = dict_new();
-        int rc = dict_read(d, dict_file);
-        assert (rc == EXIT_SUCCESS);
+	char *dict = malloc(UNIX_MAX_PATH * sizeof(char *));
+	strcpy(dict, dict_file);
+
+	dict_t *new_dict;
+	int msg;
+
+	if(strcmp(dict, "default") == 0) {
+		new_dict = dict_official();
+		
+		if (new_dict == NULL) {
+			msg = EXIT_FAILURE;
+		} else {
+			msg = EXIT_SUCCESS;
+		}
+	} else {
+		new_dict = dict_new();
+		msg = dict_read(new_dict, dict);
+	}
+
+	if (msg == EXIT_FAILURE) {
+		fprintf(stderr, "get_n_children_in_dict: invalid dict file\n");
+		exit(0);
+	}
 
 	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
 
-	//int c = trie_count_completion(d->dict, s);
+	int c = trie_completions(d->dict, s);
 
-        int c = 2;
 	return c;
 }
 
-//TODO: case for when dict_file is not provided, -d not selected, and connecting to redis dict
-//TODO: do we still need the prefix_t struct?
 // Prints the prefix, the number of children, if b==1 also the first n children.
 void print_children(int b, int n, char* s, char* dict_file)
 {
+
     prefix_t* prefix;
 
 		//Lowercasing, from https://stackoverflow.com/questions/2661766/c-convert-a-mixed-case-string-to-all-lower-case

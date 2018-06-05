@@ -49,6 +49,26 @@ int dict_init(dict_t *d) {
 }
 
 /* See dictionary.h */
+dict_t* dict_official() {
+
+    dict_t *d;
+
+    d = malloc(sizeof(dict_t));
+
+    if (d == NULL) {
+        return NULL;
+    }
+
+    trie_t* t = trie_new("dictonary");
+    if (t == NULL) {
+        return NULL;
+    }
+    d->dict = t;
+
+    return d;
+}
+
+/* See dictionary.h */
 int dict_free(dict_t *d) {
     assert(d != NULL);
     assert(d->dict != NULL);

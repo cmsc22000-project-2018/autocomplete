@@ -13,10 +13,10 @@ Program which implements a tab-based command
 #include "dictionary.h"
 
 #include "../api/include/trie.h"
-#define DEFAULT_DICTIONARY_FILE "case_dict.txt"
+#define DEFAULT_DICTIONARY_FILE "default"
 #define DEFAULT_AMT_COMPLETIONS 10
 #define DEFAULT_MAX_PREF_LEN 32
-
+#define UNIX_MAX_PATH 4096
 
 // define struct for linked list library
 struct word {
@@ -27,16 +27,46 @@ struct word {
 // GUI works by tabbing through the options and the cursor cycles back to the frist when you go over. hit ENTER to select.
 char* autocomplete(char *word, char *dict, int length, int maxCompletions)
 {
+
+	char *d = malloc(UNIX_MAX_PATH * sizeof(char *)); //dict filename up to 400 char
+
+	strcpy(d, DEFAULT_DICTIONARY_FILE);
+
   if (maxCompletions == -1)
     maxCompletions = DEFAULT_AMT_COMPLETIONS;
-  if (dict == NULL) {
-     dict = DEFAULT_DICTIONARY_FILE;
+  if (dict != NULL) {
+	strcpy(d, dict); 
 	}
   int len = strlen(dict);
   char *fileType = &dict[len-4];
   if (strncmp(fileType, ".txt", 4) != 0) {
-    dict = DEFAULT_DICTIONARY_FILE;
+    strcpy(d,DEFAULT_DICTIONARY_FILE);
 	}
+/*
+	int msg;
+	dict_t *new_dict;
+
+	//initialize dictionary, declare names of files to be used
+	if (strcmp(d, DEFAULT_DICTIONARY_FILE) == 0) {
+		//use default dictionary 
+		new_dict = dict_official();
+
+		if (new_dict == NULL) {
+			msg = EXIT_FAILURE;
+		} else {
+			msg = EXIT_SUCCESS;
+		}
+	} else {
+		new_dict = dict_new();
+
+		msg = dict_read(new_dict, d);
+	}
+
+	if(msg == EXIT_FAILURE) {
+		fprintf(stderr, "autocomplete: invalid dict file input\n");
+		exit(0);
+	}
+*/
 
   int x, y;
   int x_org, y_org; //used for clearing screen
@@ -56,11 +86,11 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
       lWord[i] = tolower(lWord[i]);
   }
 
-  char **children = get_n_children_in_dict(lWord, dict, maxCompletions);
+  char **children = get_n_children_in_dict(lWord, d, maxCompletions);
 
   // In order to restrict the number of options printed, change "num_children" to
   // some number that was inputed
-  int num_children = num_children_in_dict(lWord, dict);
+  int num_children = num_children_in_dict(lWord, d);
 
   // Stores the portion of the child that comes after the typed prefix_t
   char** partialChildren = malloc(num_children*sizeof(char));
@@ -138,19 +168,43 @@ int lets_tab_builtin(char **args)
   struct word *word = NULL; //list
 
 	//bool server = false;
-	char *dict;
+	char *dict = malloc(UNIX_MAX_PATH * sizeof(char *));
+
+	//strcpy(dict, DEFAULT_DICTIONARY_FILE);
+//	int msg;
+	
+//	dict_t *new_dict;
 
 	if (args[0] != NULL) {
   		if (strncmp(args[0], "-s", 2) == 0) {
- 	    dict = DEFAULT_DICTIONARY_FILE; //placeholder for server location of dictionary
+			strcpy(dict, DEFAULT_DICTIONARY_FILE);
+/*		 	    new_dict = dict_official();
+			if (new_dict == NULL) {
+				msg = EXIT_FAILURE;
+			} else {
+				msg = EXIT_SUCCESS;
+			}
+*/		
 		  	//server = true;
 		} else {
-			dict = args[1];
-		}
+			strcpy(dict, args[1]);
+/*			new_dict = dict_new();
+			msg = dict_read(new_dict, dict); 
+		} */
 	} else {
-		dict = DEFAULT_DICTIONARY_FILE;
+		strcpy(dict, DEFAULT_DICTIONARY_FILE);
+/*		new_dict = dict_official();
+			if(new_dict == NULL) {
+				msg = EXIT_FAILURE;
+			} else {
+				msg = EXIT_SUCCESS;
+			}
 	}
-
+	
+	if(msg == EXIT_FAILURE) {
+		fprintf(stderr, "lets_tab_builtin: Invalid dictionary file input\n");
+	exit(0);
+*/	}
   int length = 0;
   int total_length = 0;
   int start = 0;
