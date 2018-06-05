@@ -41,6 +41,18 @@ dict_t* dict_new();
  */
 int dict_init(dict_t *d);
 
+/*
+ * Allocates a new dictionary. Uses the official dictionary from the redis server
+ *
+ * Parameters:
+ *  - none
+ *
+ * Returns:
+ *  - A pointer to the dictionary, or NULL if a dictionary
+ *    cannot be allocated
+ */
+dict_t* dict_official();
+
 
 /*
  * Frees the resources associated with a dictionary
