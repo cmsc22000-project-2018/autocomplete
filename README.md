@@ -70,6 +70,8 @@
     * ~ exits interactive mode into the autocomplete shell
     * Pressing tab displays n (default: 10) autocomplete options for the most recently typed word. Pressing "enter" on an option clears the options and prints the selected option to the screen, autocompleting the word
  
- Known limitations:
+ ~~~
+
+Known limitations:
     * Cannot delete new lines
     * Cannot save to a custom filepath
