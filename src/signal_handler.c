@@ -21,11 +21,10 @@
 
 void	proc_signal_handler(int signo)
 {
-	if (signo == SIGINT)
-	{
-		ft_putstr("\n");
-		signal(SIGINT, proc_signal_handler);
-	}
+    if (signo == SIGINT) {
+        ft_putstr("\n");
+        signal(SIGINT, proc_signal_handler);
+    }
 }
 
 /*
@@ -37,10 +36,9 @@ void	proc_signal_handler(int signo)
 
 void	signal_handler(int signo)
 {
-	if (signo == SIGINT)
-	{
-		ft_putstr("\n");
-		display_prompt_msg();
-		signal(SIGINT, signal_handler);
-	}
+    if (signo == SIGINT) {
+        ft_putstr("\n");
+        display_prompt_msg();
+        signal(SIGINT, signal_handler);
+    }
 }

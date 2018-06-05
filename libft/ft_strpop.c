@@ -14,9 +14,9 @@
 
 char	*ft_strpop(char *str)
 {
-	char	*new;
+    char	*new;
 
-	new = ft_strndup(str, ft_strlen(str) - 1);
-	free(str);
-	return (new);
+    new = ft_strndup(str, ft_strlen(str) - 1);
+    free(str);
+    return (new);
 }

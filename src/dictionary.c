@@ -14,7 +14,8 @@
 #include "dictionary.h"
 
 /* See dictionary.h */
-dict_t* dict_new() {
+dict_t* dict_new()
+{
 
     dict_t *d;
     int rc;
@@ -34,7 +35,8 @@ dict_t* dict_new() {
 }
 
 /* See dictionary.h */
-int dict_init(dict_t *d) {
+int dict_init(dict_t *d)
+{
     assert(d != NULL);
 
     trie_t *t = trie_new();
@@ -47,7 +49,8 @@ int dict_init(dict_t *d) {
 }
 
 /* See dictionary.h */
-int dict_free(dict_t *d) {
+int dict_free(dict_t *d)
+{
     assert(d != NULL);
     assert(d->dict != NULL);
 
@@ -58,7 +61,8 @@ int dict_free(dict_t *d) {
 }
 
 /* See dictionary.h */
-int dict_exists(dict_t *d, char *str) {
+int dict_exists(dict_t *d, char *str)
+{
     if (d == NULL || d->dict == NULL || str == NULL || str[0] == '\0') {
         return EXIT_FAILURE;
     }
@@ -67,7 +71,8 @@ int dict_exists(dict_t *d, char *str) {
 }
 
 /* See dictionary.h */
-int dict_add(dict_t *d, char *str) {
+int dict_add(dict_t *d, char *str)
+{
     if (d == NULL || d->dict == NULL || str == NULL) {
         return EXIT_FAILURE;
     }
@@ -76,7 +81,8 @@ int dict_add(dict_t *d, char *str) {
 }
 
 /* See dictionary.h */
-int dict_read(dict_t *d, char *file) {
+int dict_read(dict_t *d, char *file)
+{
 
     // From here: https://stackoverflow.com/questions/16400886/reading-from-a-file-word-by-word
     char buffer[1024];

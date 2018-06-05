@@ -14,5 +14,5 @@
 
 int		ft_isupper(int c)
 {
-	return (c <= 'Z' && c >= 'A');
+    return (c <= 'Z' && c >= 'A');
 }
