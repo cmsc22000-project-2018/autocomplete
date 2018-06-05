@@ -16,7 +16,7 @@ NAME = autocomplete
 # Project builds and dirs
 SRCDIR = ./src/
 SRCNAMES = $(shell ls $(SRCDIR) | grep -E ".+\.c")
-SRC = $(addprefix $(SRCDIR), $(SRCNAMES))
+SRC = $(addprefix $(SRCDIR), $(SRCNAMES)) lib/log.c/src/log.c lib/log.c/src/log.h
 INC = ./inc/
 BUILDDIR = ./build/
 BUILDOBJS = $(addprefix $(BUILDDIR), $(SRCNAMES:.c=.o))

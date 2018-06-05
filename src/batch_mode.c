@@ -11,7 +11,7 @@ Program which implements batch mode autocomplete within the same framework as ba
 #include "prefix.h"
 #include "batch_mode.h"
 #include "dictionary.h"
-#include "../lib/log.c/src/log.h"
+#include "log.h"
 
 #include "../api/include/trie.h"
 #include "../api/lib/redis-tries/include/trie.h"
