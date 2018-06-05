@@ -43,7 +43,9 @@ char** get_n_children_in_dict(char* s, char* dict_file, int n)
 		printf("get_n_child_d: about to create new custom dict\n");
                 new_dict = dict_new();
                 msg = dict_read(new_dict, dict_file);
+		printf("get_n_ch_d: dict_read of custom finished\n");
         	assert (msg == EXIT_SUCCESS);
+		 printf("get_n_ch_d: dict_read of custom asserted successfully\n");
 
         }
 
@@ -87,6 +89,10 @@ int num_children_in_dict(char* s, char* dict_file)
 		printf("num_child_in_dict: about to initialize custom dict\n");
                 new_dict = dict_new();
                 msg = dict_read(new_dict, dict_file);
+		printf("num_ch_d: dict_read of custom finished\n");
+                assert (msg == EXIT_SUCCESS);
+                 printf("num_ch_d: dict_read of custom asserted successfully\n");
+
         	assert(msg == EXIT_SUCCESS);	
 	}
 
@@ -96,9 +102,9 @@ int num_children_in_dict(char* s, char* dict_file)
         }
 
 //	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
-	printf("num_child_in_dict: about to call trie_completions\n");
-	int c = trie_completions(new_dict->dict, s);
-
+//	printf("num_child_in_dict: about to call trie_completions\n");
+//	int c = trie_completions(new_dict->dict, s);
+	int c = strlen(s); //dummy value
 	return c;
 }
 

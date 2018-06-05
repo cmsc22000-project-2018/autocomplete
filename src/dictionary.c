@@ -158,7 +158,7 @@ int dict_read(dict_t *d, char *file) {
     }
 	printf("dict_read: no EXITFAILURES, about to call fclose on file: %s\n", file);
     fclose(f);
-
+	printf("dict_read: fclose successful\n");
     return EXIT_SUCCESS;
 }
 
