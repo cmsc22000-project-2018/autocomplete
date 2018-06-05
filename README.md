@@ -10,6 +10,7 @@
  >>>: 
  ```
  From here, you can re-enter interactive or batch mode.
+ 
  Known bug: Commands sporadically don't work. If that happens, just enter the command again! 
 
 ###### Batch Mode:
