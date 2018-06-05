@@ -12,8 +12,8 @@ Program which implements a tab-based command
 #include "batch_mode.h"
 #include "dictionary.h"
 
-// #include "../api/include/trie.h"
-#define DEFAULT_DICTIONARY_FILE "./src/lcase_dict.txt"
+#include "../api/include/trie.h"
+#define DEFAULT_DICTIONARY_FILE "case_dict.txt"
 #define DEFAULT_AMT_COMPLETIONS 10
 #define DEFAULT_MAX_PREF_LEN 32
 
@@ -29,12 +29,14 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
 {
   if (maxCompletions == -1)
     maxCompletions = DEFAULT_AMT_COMPLETIONS;
-  if (dict == NULL)
+  if (dict == NULL) {
      dict = DEFAULT_DICTIONARY_FILE;
+	}
   int len = strlen(dict);
   char *fileType = &dict[len-4];
-  if (strncmp(fileType, ".txt", 4) != 0)
+  if (strncmp(fileType, ".txt", 4) != 0) {
     dict = DEFAULT_DICTIONARY_FILE;
+	}
 
   int x, y;
   int x_org, y_org; //used for clearing screen
@@ -61,14 +63,15 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
   int num_children = num_children_in_dict(lWord, dict);
 
   // Stores the portion of the child that comes after the typed prefix_t
-  char** partialChildren = malloc(num_children);
+  char** partialChildren = malloc(num_children*sizeof(char));
 
   int i;
   int childrenToDisplay;
-  if (maxCompletions > num_children)
+  if (maxCompletions > num_children) {
     childrenToDisplay = num_children;
-  else
+  } else {
     childrenToDisplay = maxCompletions;
+  }
   for (i = 0; i < childrenToDisplay; i++) {
 
     //create pointer to "the rest" of the word
@@ -139,13 +142,13 @@ int lets_tab_builtin(char **args)
 
 	if (args[0] != NULL) {
   		if (strncmp(args[0], "-s", 2) == 0) {
- 	    dict = "./src/test_prefixes.txt"; //placeholder for server location of dictionary
+ 	    dict = DEFAULT_DICTIONARY_FILE; //placeholder for server location of dictionary
 		  	//server = true;
 		} else {
 			dict = args[1];
 		}
 	} else {
-		dict = "./src/test_prefixes.txt";
+		dict = DEFAULT_DICTIONARY_FILE;
 	}
 
   int length = 0;

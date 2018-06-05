@@ -8,10 +8,12 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include <stdio.h>
 #include <assert.h>
 #include <unistd.h>
 #include "dictionary.h"
+#include "../api/include/trie.h"
 
 /* See dictionary.h */
 dict_t* dict_new() {
@@ -37,7 +39,7 @@ dict_t* dict_new() {
 int dict_init(dict_t *d) {
     assert(d != NULL);
 
-    trie_t *t = trie_new();
+    trie_t *t = trie_new("dict");
     if (t == NULL) {
         return EXIT_FAILURE;
     }
@@ -63,7 +65,13 @@ int dict_exists(dict_t *d, char *str) {
         return EXIT_FAILURE;
     }
 
-    return trie_exists(d->dict, str);
+    int rc = trie_contains(d->dict, str);
+
+	if (rc==0) {
+		return EXIT_SUCCESS;
+	}
+	
+	return EXIT_FAILURE;
 }
 
 /* See dictionary.h */
@@ -72,21 +80,29 @@ int dict_add(dict_t *d, char *str) {
         return EXIT_FAILURE;
     }
 
-    return trie_add(d->dict, str);
+
+	if(strnlen(str, 61) == 61) {
+		return EXIT_FAILURE;
+	}
+
+	int rc = trie_insert(d->dict, str);
+	
+	if (rc==0) return EXIT_SUCCESS;
+	return EXIT_FAILURE;
 }
 
 /* See dictionary.h */
 int dict_read(dict_t *d, char *file) {
 
     // From here: https://stackoverflow.com/questions/16400886/reading-from-a-file-word-by-word
-    char buffer[1024];
+    char buffer[61];
     FILE *f = fopen(file, "r");
 
     if (f == NULL) {
         return EXIT_FAILURE;
     }
 
-    while (fscanf(f, "%1023s", buffer) == 1) {
+    while (fscanf(f, "%100s", buffer) == 1) {
         if (dict_add(d, buffer) != EXIT_SUCCESS) {
             return EXIT_FAILURE;
         }
