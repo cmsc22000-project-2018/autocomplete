@@ -191,15 +191,17 @@ int lets_tab_builtin(char **args)
 /*			new_dict = dict_new();
 			msg = dict_read(new_dict, dict); 
 		} */
+		}
 	} else {
 		strcpy(dict, DEFAULT_DICTIONARY_FILE);
+	
 /*		new_dict = dict_official();
 			if(new_dict == NULL) {
 				msg = EXIT_FAILURE;
 			} else {
 				msg = EXIT_SUCCESS;
 			}
-	}
+	} 
 	
 	if(msg == EXIT_FAILURE) {
 		fprintf(stderr, "lets_tab_builtin: Invalid dictionary file input\n");
