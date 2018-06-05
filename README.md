@@ -9,7 +9,7 @@
 
 ## Using the tool
 
-### Autocomplete Shell:
+### Autocomplete Shell
  After running interactive or batch mode, you will enter the interactive mode shell. It looks like this:
  ```
  AUTOCOMPLETE Instructions: interactive <flags> || batch <flags> || exit
@@ -19,7 +19,7 @@
  
  Known bug: Commands sporadically don't work. If that happens, just enter the command again! 
 
-### Batch Mode:
+### Batch Mode
  Batch mode applies the autocomplete tool to a file of prefixes. The input file must be formatted with
  a new line for each prefix, e.g.
  ```
