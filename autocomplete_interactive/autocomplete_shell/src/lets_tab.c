@@ -200,41 +200,77 @@ int lets_tab_builtin(char **args)
       // Fetching typed word from the llist
       char *wordTyped = malloc(sizeof(char)*(word->prefix_length+1));
       int i = word->prefix_length;
+      int i_0 = i;
       wordTyped[word->prefix_length] = '\0';
+      bool check = false;
       while (i != 0) {
         wordTyped[i-1] = word->letter;
-        i--;
+        if ((word->letter >= 65 && word-> letter <= 90) ||
+          (word->letter >= 97 && word->letter <= 122) ||
+          word-> letter == 39)
+          ;
+        else {
+          check = true;
+        }
         word = ll_pop(word);
+        i--;
+        total_length--;
       }
 
-		  // Setting number of completions
-      int maxCompletions = -1;
-			bool n_flag_found = false;
-			int flag = 0;
-			for (; flag < amountOfArgs; flag++) {
-				if (args[flag] != NULL) {
-					if (strncmp(args[flag], "-n", 2) == 0){
-				    n_flag_found = true;
-					  break;
-					}
-				}
-			}
+      if (check == false) {
+        // Setting number of completions
+        while(i_0 != 0) {
+          word = ll_pop(word);
+          i_0--;
+        }
+        int maxCompletions = -1;
+        bool n_flag_found = false;
+        int flag = 0;
+        for (; flag < amountOfArgs; flag++) {
+          if (args[flag] != NULL) {
+            if (strncmp(args[flag], "-n", 2) == 0){
+              n_flag_found = true;
+              break;
+            }
+          }
+        }
 
-			if (n_flag_found == true)
-			  if (args[flag+1] != NULL)
-				  maxCompletions = atoi(args[flag+1]);
+        if (n_flag_found == true)
+          if (args[flag+1] != NULL)
+            maxCompletions = atoi(args[flag+1]);
       
-      // Autocomplete function, returns the autocompleted word
-      char *complete_word = autocomplete(wordTyped, dict, length, maxCompletions);
-      length = 0;
-      // Puts the autocompleted work back into the llist
-      for (i = 0; complete_word[i] != '\0'; i++) {
-        word = ll_new(word);
-        word->letter = complete_word[i];
-        length++;
-        word->prefix_length = length;
-        total_length++;
+        // Autocomplete function, returns the autocompleted word
+        char *complete_word = autocomplete(wordTyped, dict, length, maxCompletions);
+        length = 0;
+        // Puts the autocompleted work back into the llist
+        for (i = 0; complete_word[i] != '\0'; i++) {
+          word = ll_new(word);
+          word->letter = complete_word[i];
+          length++;
+          word->prefix_length = length;
+          total_length++;
+        }
       }
+
+      else {
+        for (i = 0; wordTyped[i] != '\0'; i++) {
+          word = ll_new(word);
+          word->letter = wordTyped[i];
+          length++;
+          word->prefix_length = length;
+          total_length++;
+        }
+        getyx(stdscr, y, x);
+        printw("\nInvalid word :-( cannot autocomplete\n");
+        printw("press enter to continue");
+        char c_2;
+        while (10 != (c_2 = getch()))
+          ;
+        move(y, x);
+        refresh();
+        clrtobot();
+        refresh();
+      }	  
     }
 
     // Delete or backspace functionality
