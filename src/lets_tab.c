@@ -60,13 +60,16 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
       lWord[i] = tolower(lWord[i]);
   }
 
+	printf("autocomplete: about to call new_dict_from_file\n");
+	dict_t *new_dict = new_dict_from_file(dct);
+
 	printf("autocomplete: about to call get_n_ch_d\n");
-  char **children = get_n_children_in_dict(lWord, dct, maxCompletions);
+  char **children = get_n_children_in_dict(lWord, new_dict, maxCompletions);
 
   // In order to restrict the number of options printed, change "num_children" to
   // some number that was inputed
 	printf("autocomplete:about to call num_ch_d\n");
-  int num_children = num_children_in_dict(lWord, dct);
+  int num_children = num_children_in_dict(lWord, new_dict);
 
   // Stores the portion of the child that comes after the typed prefix_t
   char** partialChildren = malloc(num_children*sizeof(char));

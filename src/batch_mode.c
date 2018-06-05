@@ -18,100 +18,43 @@ Program which implements batch mode autocomplete within the same framework as ba
 #define SHOWNWORDS 10
 #define MAXPREFLEN 32
 #define UNIX_MAX_PATH 4096
-#define DEFAULT_DICTIONARY_FILE "default"
+//#define DEFAULT_DICTIONARY_FILE "default"
 
 // See batch_mode.h
-char** get_n_children_in_dict(char* s, char* dict_file, int n)
+char** get_n_children_in_dict(char* s, dict_t* d, int n)
 {
 	printf("entering get_n_children_in_dict\n");
-//	char *dict = malloc(UNIX_MAX_PATH * sizeof(char *));
-  //      strcpy(dict, dict_file);
-
-        dict_t *new_dict;
-        int msg;
-
-        if(strcmp(dict_file, "default") == 0) {
-		printf("get_n_child_dict: about to initialize to default dict\n");
-                new_dict = dict_official();
-
-                if (new_dict == NULL) {
-                        msg = EXIT_FAILURE;
-                } else {
-                        msg = EXIT_SUCCESS;
-                }
-        } else {
-		printf("get_n_child_d: about to create new custom dict\n");
-                new_dict = dict_new();
-                msg = dict_read(new_dict, dict_file);
-		printf("get_n_ch_d: dict_read of custom finished\n");
-        	assert (msg == EXIT_SUCCESS);
-		 printf("get_n_ch_d: dict_read of custom asserted successfully\n");
-
-        }
-
-        if (msg == EXIT_FAILURE) {
-  		 fprintf(stderr, "get_n_children_in_dict: invalid dict file\n");
-                exit(0);
-        }	
-
-//	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
+// TODO: assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
 	
 	printf("%s", s);
 //	char** children = trie_approx(new_dict->dict, s, 2, n); 
 		//default for max_edit_dist in TRIE.APPROX is 2
 	printf("get_n_child_d: about to call dict_suggestions\n");
-	char** children = dict_suggestions(new_dict, s, 2, n);
+	char** children = dict_suggestions(d, s, 6, n);
 
 	return children;
 	
 }
 
 // See batch_mode.h
-int num_children_in_dict(char* s, char* dict_file) 
+int num_children_in_dict(char* s, dict_t* d) 
 {
 	printf("entering num_children_in_dict\n");
-       // char *dict = malloc(UNIX_MAX_PATH * sizeof(char *));
-       // strcpy(dict, dict_file);
-
-        dict_t *new_dict;
-        int msg;
-
-        if(strcmp(dict_file, "default") == 0) {
-		printf("num_child_in_dict: about to initialize default dict\n");
-                new_dict = dict_official();
-
-                if (new_dict == NULL) {
-                        msg = EXIT_FAILURE;
-                } else {
-                        msg = EXIT_SUCCESS;
-                }
-        } else {
-		printf("num_child_in_dict: about to initialize custom dict\n");
-                new_dict = dict_new();
-                msg = dict_read(new_dict, dict_file);
-		printf("num_ch_d: dict_read of custom finished\n");
-                assert (msg == EXIT_SUCCESS);
-                 printf("num_ch_d: dict_read of custom asserted successfully\n");
-
-        	assert(msg == EXIT_SUCCESS);	
-	}
-
-	 if (msg == EXIT_FAILURE) {
-                fprintf(stderr, "get_n_children_in_dict: invalid dict file\n");
-                exit(0);
-        }
-
-//	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
-//	printf("num_child_in_dict: about to call trie_completions\n");
-//	int c = trie_completions(new_dict->dict, s);
-	int c = strlen(s); //dummy value
+//TODO:	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
+	printf("num_child_in_dict: about to call trie_completions\n");
+	int c = trie_completions(d->dict, s);
+//	printf("num_ch_d: about to assert d!=NULL\n");
+//	assert(d != NULL);
+//	printf("num_ch_d: successful assetion that d!=NULL\n");
+//	int c = strlen(s);
+	printf("num_ch_d:finished trie_completions, value= %d\n", c); 
 	return c;
 }
 
 //TODO: case for when dict_file is not provided, -d not selected, and connecting to redis dict
 //TODO: do we still need the prefix_t struct?
 // Prints the prefix, the number of children, if b==1 also the first n children.
-void print_children(int b, int n, char* s, char* dict_file)
+void print_children(int b, int n, char* s, dict_t* dict)
 {
 	printf("entering print_children\n");
     prefix_t* prefix;
@@ -123,10 +66,11 @@ void print_children(int b, int n, char* s, char* dict_file)
         str[i] = tolower(str[i]);
     }
 	printf("print_children: about to call get_n_ch_d and num_ch_d\n");
-    char** children = get_n_children_in_dict(str, dict_file,n);
-    int num_children = num_children_in_dict(str, dict_file);
+    char** children = get_n_children_in_dict(str, dict,n);
+    int num_children = num_children_in_dict(str, dict);
+	printf("print_children: about to call prefix_new, word is %s\n", s);
     prefix = prefix_new(s, children, num_children);
-
+	printf("print_children: finished calling prefix_new\n");
     //Currently children ins a memory leak because get_children_in_dict mallocs strings that are never freed
     //This should be corrected by a 'real' get_children which simply returns pointers to its
     //own data which is freed elsewhere
@@ -182,7 +126,7 @@ void print_children(int b, int n, char* s, char* dict_file)
     else {
         ft_putstr("\n");
     }
-
+	printf("print_children: about to call prefix_free before exiting\n");
     prefix_free(prefix);
    
 }
@@ -236,14 +180,20 @@ int batch_mode_builtin(char **args)
 					i++;
 			}
 	}
-    if (fileSet) {
+
+ 
+	printf("batch_mode_builtin: about to call new_dictionary_from_file\n");
+	dict_t* new_dict = new_dict_from_file(dictionary);
+	
+
+   if (fileSet) {
 		    char* currentPrefix = malloc(MAXPREFLEN * sizeof(char)); //Temporary constant value
         //For a cleaner look in shell
 				ft_putstr("\n");
 		    while (fgets(currentPrefix, MAXPREFLEN, prefixFile)) {   //Temporary constant value
 					  //Strips the newline character by replacing it with the null terminator
 		    		currentPrefix[strlen(currentPrefix) - 1] = '\0';
-		    		print_children(showWords, nWords, currentPrefix, dictionary);
+		    		print_children(showWords, nWords, currentPrefix, new_dict);
 		    }
 	    	free(currentPrefix);
     }

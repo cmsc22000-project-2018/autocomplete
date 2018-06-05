@@ -176,3 +176,44 @@ char **dict_suggestions(dict_t *d, char *str, int max_edits, int n) {
  
      return results;
  }
+
+
+/* See dictionary.h */
+dict_t* new_dict_from_file(char *filename) {
+	printf("entering new_dict_from_file\n");
+	
+	char* dict = malloc(UNIX_MAX_PATH * sizeof(char *));
+	strcpy(dict, filename);
+
+	dict_t *new_dict;
+	int msg;
+
+	if(strcmp(filename, "default") == 0) {
+		printf("new_dict_from_file: about to initialize default dict\n");
+		new_dict = dict_official();
+
+		if(new_dict == NULL) {
+			msg = EXIT_FAILURE;
+		} else {
+			msg = EXIT_SUCCESS;
+		}
+	} else {
+		printf("new_dict_from_file: about to create new custom dict\n");
+		new_dict = dict_new();
+		msg = dict_read(new_dict, filename);
+		printf("new_dict_from_file: dict_read of custom finished\n");
+		assert (msg == EXIT_SUCCESS);
+		printf("new_dict_from_file: dict_read of custom successful\n");
+	}
+
+	if(msg == EXIT_FAILURE) {
+		fprintf(stderr, "new_dict_from_file: invalid dict file\n");
+		exit(0);
+	}
+
+	printf("new_dict_from_file: no EXIT_FAILURES, returning dict_t\n");
+//	free(dict);
+	return new_dict;
+}
+
+

@@ -123,4 +123,19 @@ int dict_read(dict_t *d, char *file);
 char **dict_suggestions(dict_t *d, char *str, int max_edits, int n);
 
 
+/* 
+ * Creates a new dictionary in redis, 
+ * either the default dictionary if filename is default,
+ * or loads a custom dictionary into redis server if given a custom filename
+ *
+ * Parameters:
+ *  - filename: string representing a filename
+ * 
+ * Returns:
+ *  - a pointer to a dictionary struct loaded in redis server
+ */
+dict_t* new_dict_from_file(char *filename);
+
+
+
 #endif /* INCLUDE_DICTIONARY_H_ */
