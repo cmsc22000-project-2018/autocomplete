@@ -14,7 +14,7 @@ Program which implements batch mode autocomplete within the same framework as ba
 #include "log.h"
 
 #include "../api/include/trie.h"
-#include "../api/lib/redis-tries/include/trie.h"
+
 
 #define SHOWNWORDS 10
 #define MAXPREFLEN 32
@@ -23,17 +23,19 @@ Program which implements batch mode autocomplete within the same framework as ba
 // See batch_mode.h
 char** get_n_children_in_dict(char* s, char* dict_file, int n)
 {
-	
+	log_debug("get_n_children_in_dict: ENTER FUNC"); 
 	dict_t *d = dict_new();
 	int rc = dict_read(d, dict_file);
 	assert (rc == EXIT_SUCCESS);
-
+        log_debug("dict_read: EXIT SUCCESS");
 	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
-	
+	log_debug("get_n_children_in_dict: word is contained in trie");
 	printf("%s", s);
+        log_debug("get_n_children_in_dict: printing %s", s);
 	char** children = trie_approx(d->dict, s, 2, n); 
 		//default for max_edit_dist in TRIE.APPROX is 2
-	
+	log_debug("get_n_children_in_dict: exited trie_approx");
+        log_debug("get_n_children_in_dict: EXIT FUNC");
 	return children;
 	
 }
@@ -41,16 +43,17 @@ char** get_n_children_in_dict(char* s, char* dict_file, int n)
 // See batch_mode.h
 int num_children_in_dict(char* s, char* dict_file) 
 {
-	
+	log_debug("num_children_in_dict: ENTER FUNC");
 	dict_t *d = dict_new();
         int rc = dict_read(d, dict_file);
         assert (rc == EXIT_SUCCESS);
-
+        log_debug("dict_read: EXIT SUCCESS");
 	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
-
+        log_debug("num_children_in_dict: word is contained in trie");
 	//int c = trie_count_completion(d->dict, s);
-
         int c = 2;
+        log_debug("num_children_in_dict: exited trie_count_completion");
+        log_debug("num_children_in_dict: EXIT FUNC");
 	return c;
 }
 
@@ -60,7 +63,7 @@ int num_children_in_dict(char* s, char* dict_file)
 //needs logging
 void print_children(int b, int n, char* s, char* dict_file)
 {
-    log_debug("print_children: ENTERING FUNC");    
+    log_debug("print_children: ENTER FUNC");    
     prefix_t* prefix;
 
 		//Lowercasing, from https://stackoverflow.com/questions/2661766/c-convert-a-mixed-case-string-to-all-lower-case
@@ -107,11 +110,13 @@ void print_children(int b, int n, char* s, char* dict_file)
     if (b) {
 			  ft_putstr(",");
         ft_putstr(" [");
+        log_trace("print_children: entering for loop to print completions");
         for (int i = 0; i < prefix->nComps && i < n; i++) {
 					  //Restore capitalization of prefix
 					  char* compi = malloc(strlen(prefix->completions[i]) + 1);
 						strcpy(compi, prefix->completions[i]);
-						for (int j = 0; j < prefLen; j++) {
+						log_trace("print_children: printing prefix %d: %s", i + 1, compi);
+                                                for (int j = 0; j < prefLen; j++) {
 							  compi[j] = prefix->prefix[j];
 						}
             ft_putstr(compi);
@@ -134,14 +139,14 @@ void print_children(int b, int n, char* s, char* dict_file)
     }
 
     prefix_free(prefix);
-   
+    log_debug("print_children: EXIT");
 }
 
 //Function to enter batch autocomplete mode within the interactive framework
 //needs logging 
 int batch_mode_builtin(char **args)
 {
-	log_debug("batch_mode_builtin: ENTERING FUNC");
+	log_debug("batch_mode_builtin: ENTER FUNC");
         int showWords = 0;
 	int nWords = SHOWNWORDS;
 	char* dictionary = "/src/lcase_dict.txt"; //Once we can, should be initialized to the redis dictionary

@@ -9,6 +9,8 @@
 
 #include "../api/include/trie.h"
 
+#define MAXSTRLEN 60
+
 /* A dictionary struct, represented as a trie (mock trie for now) */
 typedef struct {
     trie_t *dict;
