@@ -66,6 +66,8 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
   // some number that was inputed
   int num_children = num_children_in_dict(lWord, dict);
 
+
+
   // Stores the portion of the child that comes after the typed prefix_t
   char** partialChildren = malloc(num_children);
 
@@ -80,6 +82,15 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
     partialChildren[i] = malloc(strlen(children[i]) + 1);
     strcpy(partialChildren[i], children[i]);
     partialChildren[i] += (strlen(word) * sizeof(char));
+    if (num_children == 1) {
+      wmove(stdscr, y_org, (x_org-length)); // prints over the typed word
+      wrefresh(stdscr);
+      if (cap == true)
+        children[0][0] -= ('a' - 'A');
+      printw("%s%s", word, partialChildren[0]);
+      clrtobot();
+      return children[0];
+    } 
     //prints the word, as entered, plus the 'rest' from the dictionary
     printw("%d: %s%s\n", i, word, partialChildren[i]);
   }
@@ -231,10 +242,10 @@ int lets_tab_builtin(char **args)
     if (c == 127 || c == 8) {
         getyx(stdscr, y, x);
         x--;
+        word = ll_pop(word);
         move(y, x);
         clrtobot();
         refresh();
-        word = ll_pop(word);
         if (total_length != 0)
           total_length--;
         if (word) {
