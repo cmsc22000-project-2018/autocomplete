@@ -34,3 +34,42 @@
  Lo: ........... 6, [Lo, Long, Longer, Longest, Loop, Looping]
  ```
  for example, with each prefix on its own line. Without the -w flag set, the bracketed words would not be displayed.
+
+###### Interactive Mode
+ 
+ Interactive mode opens a terminal-based text editor we wrote using the ncurses library. Once in the editor, you can type as normal and then press "tab" to autocomplete the current word.
+
+ From the terminal, you can enter interactive mode with the following commandline prompts:
+ ```
+ ./autocomplete
+ ./autocomplete -i <flags>
+ ```
+ From the autocomplete shell, you can enter interactive mode with the following commandline prompts:
+ ```
+ ./autocomplete
+ ./autocomplete interactive <flags>
+ ```
+  Interactive mode has the following flags:
+  ```
+  -d <file path> 
+  -n <natural number>
+  ```
+  -d specifies a local dictionary file to use, and -n specifies the number of completions to display.
+
+  Example call:
+  ```
+  ./autocomplete -d src/test_dict.txt -n 5
+  ```
+
+ Text editor interface:
+    - When you start the editor, a prompt with instructions will appear. Press enter to start typing
+    - While in the editor, the following keyboard commands are valid:
+        - Typing
+        - Deleting anything but new lines
+        - ` saves the file to the current directory with either a custom name or the file "autocomplete_save.txt"
+        - ~ exits interactive mode into the autocomplete shell
+    - Pressing tab displays n (default: 10) autocomplete options for the most recently typed word. Pressing "enter" on an option clears the options and prints the selected option to the screen, autocompleting the word
+ 
+ Known limitations:
+    - Cannot delete new lines
+    - Cannot save to a custom filepath
