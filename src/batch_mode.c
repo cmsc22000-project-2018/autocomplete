@@ -141,7 +141,8 @@ void print_children(int b, int n, char* s, char* dict_file)
 //needs logging 
 int batch_mode_builtin(char **args)
 {
-	int showWords = 0;
+	log_debug("batch_mode_builtin: ENTERING FUNC");
+        int showWords = 0;
 	int nWords = SHOWNWORDS;
 	char* dictionary = "/src/lcase_dict.txt"; //Once we can, should be initialized to the redis dictionary
 	FILE* prefixFile;
