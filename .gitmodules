@@ -5,3 +5,9 @@
 [submodule "lsh"]
 	path = program_examples/lsh
 	url = https://github.com/brenns10/lsh.git
+[submodule "autocomplete_interactive/autocomplete_shell/lib/log.c"]
+	path = autocomplete_interactive/autocomplete_shell/lib/log.c
+	url = https://github.com/rxi/log.c
+[submodule "lib/log.c"]
+	path = lib/log.c
+	url = https://github.com/rxi/log.c

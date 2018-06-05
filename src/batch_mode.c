@@ -11,6 +11,7 @@ Program which implements batch mode autocomplete within the same framework as ba
 #include "prefix.h"
 #include "batch_mode.h"
 #include "dictionary.h"
+#include "../lib/log.c/src/log.h"
 
 #include "../api/include/trie.h"
 #include "../api/lib/redis-tries/include/trie.h"
@@ -56,8 +57,10 @@ int num_children_in_dict(char* s, char* dict_file)
 //TODO: case for when dict_file is not provided, -d not selected, and connecting to redis dict
 //TODO: do we still need the prefix_t struct?
 // Prints the prefix, the number of children, if b==1 also the first n children.
+//needs logging
 void print_children(int b, int n, char* s, char* dict_file)
 {
+    log_debug("print_children: ENTERING FUNC");    
     prefix_t* prefix;
 
 		//Lowercasing, from https://stackoverflow.com/questions/2661766/c-convert-a-mixed-case-string-to-all-lower-case
@@ -66,16 +69,19 @@ void print_children(int b, int n, char* s, char* dict_file)
 		for(int i = 0; str[i] != '\0'; i++) {
         str[i] = tolower(str[i]);
     }
-
+    log_trace("print_children: converted input to lowercase: %s to %s", s, str);
     char** children = get_n_children_in_dict(str, dict_file,n);
+    log_trace("print_children: retrieved children");
     int num_children = num_children_in_dict(str, dict_file);
     prefix = prefix_new(s, children, num_children);
+    log_trace("print_children: created prefix struct");
 
     //Currently children ins a memory leak because get_children_in_dict mallocs strings that are never freed
     //This should be corrected by a 'real' get_children which simply returns pointers to its
     //own data which is freed elsewhere
 
     ft_putstr(prefix->prefix);
+    log_trace("print_children: printing prefix %s", prefix->prefix);
     ft_putstr(": ");
 
     
@@ -132,6 +138,7 @@ void print_children(int b, int n, char* s, char* dict_file)
 }
 
 //Function to enter batch autocomplete mode within the interactive framework
+//needs logging 
 int batch_mode_builtin(char **args)
 {
 	int showWords = 0;
