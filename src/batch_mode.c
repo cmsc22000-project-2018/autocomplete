@@ -52,7 +52,7 @@ int num_children_in_dict(char* s, dict_t* d)
         //assert (rc == EXIT_SUCCESS);
         //log_debug("dict_read: EXIT SUCCESS");
 	assert(d != NULL);
-        assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
+        //assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
         log_debug("num_children_in_dict: word is contained in trie");
 	//int c = trie_count_completion(d->dict, s);
         int c = 2;

@@ -14,7 +14,7 @@ Program which implements a tab-based command
 #include "log.h"
 
 #include "../api/include/trie.h"
-#define DEFAULT_DICTIONARY_FILE "case_dict.txt"
+#define DEFAULT_DICTIONARY_FILE "./src/case_dict.txt"
 #define DEFAULT_AMT_COMPLETIONS 10
 #define DEFAULT_MAX_PREF_LEN 32
 
@@ -56,13 +56,13 @@ char* autocomplete(char *word, dict_t* d, int length, int maxCompletions)
   for(int i = 0; lWord[i] != '\0'; i++) {
       lWord[i] = tolower(lWord[i]);
   }
-
+  log_debug("about to retrieve children of'%s'", lWord);
   char **children = get_n_children_in_dict(lWord, d, maxCompletions);
 
   // In order to restrict the number of options printed, change "num_children" to
   // some number that was inputed
   int num_children = num_children_in_dict(lWord, d);
-
+  //log_debug("exited num_children: %d", num_children);
   // Stores the portion of the child that comes after the typed prefix_t
   char** partialChildren = malloc(num_children*sizeof(char));
 
@@ -140,35 +140,35 @@ int lets_tab_builtin(char **args)
   struct word *word = NULL; //list
 
 	//bool server = false;
-	char *dictionary = malloc(100* sizeof(char *));
-        strcpy(dictionary, "default"); //initialized to default dictionary
-        log_trace("lets_tab_builtin: successfully initialized dictionary to '%s'", dictionary);
+//	char *dictionary = malloc(100* sizeof(char *));
+//        strcpy(dictionary, "default"); //initialized to default dictionary
+//        log_trace("lets_tab_builtin: successfully initialized dictionary to '%s'", dictionary);
 //	if (args[0] != NULL) {
 //  		if (strncmp(args[0], "-s", 2) != 0) {
 //			dictionary = args[1];
 //		}
 //	}
-        log_trace("lets_tab_builtin: dictionary is now set to '%s'", dictionary);
+ //       log_trace("lets_tab_builtin: dictionary is now set to '%s'", dictionary);
         int msg;
         dict_t *d;
 
                  // Initialize dictionary, declare names of files to be used
-        if (strcmp(dictionary, "default") == 0) {
-            log_trace("lets_tab_builtin: use default dictionary");
-            d = dict_official();
+    //    if (strcmp(dictionary, "default") == 0) {
+    //        log_trace("lets_tab_builtin: use default dictionary");
+    //        d = dict_official();
 
-            if (d == NULL) {
-                msg = EXIT_FAILURE;
-            } else {
-                msg = EXIT_SUCCESS;
-            }
+      //      if (d == NULL) {
+      //          msg = EXIT_FAILURE;
+      //      } else {
+      //          msg = EXIT_SUCCESS;
+      //      }
 
-        } else {
+        //} else {
             log_trace("lets_tab_builtin: use custom dictionary");
             d = dict_new();
 
-            msg = dict_read(d, dictionary);
-        }
+            msg = dict_read(d, DEFAULT_DICTIONARY_FILE);
+       // }
 
         if (msg == EXIT_FAILURE) {
             //shell_error("Invalid dictionary file input.", color);
