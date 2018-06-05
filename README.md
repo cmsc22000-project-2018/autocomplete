@@ -3,6 +3,11 @@
 
 ## Using the tool
 
+###### Interactive Mode Shell:
+ After running interactive or batch mode, you will enter the interactive mode shell. It looks like this:
+ ```
+ 
+
 ###### Batch Mode:
  Batch mode applies the autocomplete tool to a file of prefixes. The input file must be formatted with
  a new line for each prefix, e.g.
