@@ -11,6 +11,7 @@ Program which implements a tab-based command
 #include "ll.h"
 #include "batch_mode.h"
 #include "dictionary.h"
+#include "log.h"
 
 #include "../api/include/trie.h"
 #define DEFAULT_DICTIONARY_FILE "case_dict.txt"
@@ -25,18 +26,18 @@ struct word {
 };
 
 // GUI works by tabbing through the options and the cursor cycles back to the frist when you go over. hit ENTER to select.
-char* autocomplete(char *word, char *dict, int length, int maxCompletions)
+char* autocomplete(char *word, dict_t* d, int length, int maxCompletions)
 {
   if (maxCompletions == -1)
-    maxCompletions = DEFAULT_AMT_COMPLETIONS;
-  if (dict == NULL) {
-     dict = DEFAULT_DICTIONARY_FILE;
-	}
-  int len = strlen(dict);
-  char *fileType = &dict[len-4];
-  if (strncmp(fileType, ".txt", 4) != 0) {
-    dict = DEFAULT_DICTIONARY_FILE;
-	}
+   maxCompletions = DEFAULT_AMT_COMPLETIONS;
+//  if (dict == NULL) {
+//     dict = DEFAULT_DICTIONARY_FILE;
+//	}
+//  int len = strlen(dict);
+//  char *fileType = &dict[len-4];
+//  if (strncmp(fileType, ".txt", 4) != 0) {
+ //   dict = DEFAULT_DICTIONARY_FILE;
+//	}
 
   int x, y;
   int x_org, y_org; //used for clearing screen
@@ -56,11 +57,11 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
       lWord[i] = tolower(lWord[i]);
   }
 
-  char **children = get_n_children_in_dict(lWord, dict, maxCompletions);
+  char **children = get_n_children_in_dict(lWord, d, maxCompletions);
 
   // In order to restrict the number of options printed, change "num_children" to
   // some number that was inputed
-  int num_children = num_children_in_dict(lWord, dict);
+  int num_children = num_children_in_dict(lWord, d);
 
   // Stores the portion of the child that comes after the typed prefix_t
   char** partialChildren = malloc(num_children*sizeof(char));
@@ -131,25 +132,50 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
 // command to enter interactive autocomplete mode
 int lets_tab_builtin(char **args)
 {
-
+  log_debug("lets_tab_builtin: ENTER FUNC");
   int amountOfArgs;
 	for (amountOfArgs = 0; args[amountOfArgs] != NULL; amountOfArgs++);
+  log_trace("lets_tab_builtin: amount0fArgs for loop (%d)", amountOfArgs);
 
   struct word *word = NULL; //list
 
 	//bool server = false;
-	char *dict;
+	char *dictionary = malloc(100* sizeof(char *));
+        strcpy(dictionary, "default"); //initialized to default dictionary
+        log_trace("lets_tab_builtin: successfully initialized dictionary to '%s'", dictionary);
+//	if (args[0] != NULL) {
+//  		if (strncmp(args[0], "-s", 2) != 0) {
+//			dictionary = args[1];
+//		}
+//	}
+        log_trace("lets_tab_builtin: dictionary is now set to '%s'", dictionary);
+        int msg;
+        dict_t *d;
 
-	if (args[0] != NULL) {
-  		if (strncmp(args[0], "-s", 2) == 0) {
- 	    dict = DEFAULT_DICTIONARY_FILE; //placeholder for server location of dictionary
-		  	//server = true;
-		} else {
-			dict = args[1];
-		}
-	} else {
-		dict = DEFAULT_DICTIONARY_FILE;
-	}
+                 // Initialize dictionary, declare names of files to be used
+        if (strcmp(dictionary, "default") == 0) {
+            log_trace("lets_tab_builtin: use default dictionary");
+            d = dict_official();
+
+            if (d == NULL) {
+                msg = EXIT_FAILURE;
+            } else {
+                msg = EXIT_SUCCESS;
+            }
+
+        } else {
+            log_trace("lets_tab_builtin: use custom dictionary");
+            d = dict_new();
+
+            msg = dict_read(d, dictionary);
+        }
+
+        if (msg == EXIT_FAILURE) {
+            //shell_error("Invalid dictionary file input.", color);
+            log_fatal("Invalid dictionary file input.");
+            exit(0);
+        }
+
 
   int length = 0;
   int total_length = 0;
@@ -216,7 +242,7 @@ int lets_tab_builtin(char **args)
 		  //if (amountOfArgs >= 3)
 				//if(args[2] != NULL)
 				  //maxCompletions = atoi(args[2]);
-      char *complete_word = autocomplete(wordTyped, dict, length, maxCompletions);
+      char *complete_word = autocomplete(wordTyped, d, length, maxCompletions);
       length = 0;
       for (i = 0; complete_word[i] != '\0'; i++) {
         word = ll_new(word);

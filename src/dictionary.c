@@ -59,13 +59,13 @@ dict_t* dict_official() {
     d = malloc(sizeof(dict_t));
 
     if (d == NULL) {
-        log_fatal("dict_new dictionary malloc failed");
+        log_fatal("dict_official: dictionary malloc failed");
         return NULL;
     }
 
     trie_t* t = trie_new("dictionary");
     if (t == NULL) {
-        log_fatal("dict_init trie_new failed");
+        log_fatal("dict_official: trie_new failed");
         return NULL;
     }
     d->dict = t;
@@ -136,7 +136,7 @@ int dict_read(dict_t *d, char *file) {
     // From here: https://stackoverflow.com/questions/16400886/reading-from-a-file-word-by-word
     char buffer[MAXSTRLEN + 1];
     FILE *f = fopen(file, "r");
-    log_debug("opened file %s", file);
+    log_debug("dict_read: opened file '%s'", file);
 
     if (f == NULL) {
         log_trace("dict_read: file was NULL");
