@@ -1,4 +1,0 @@
-hi, i am jonas!
-read can read all sorts of things
-and print! multiple? line$
-with #punctuation :)

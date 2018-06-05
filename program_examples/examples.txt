@@ -1,4 +1,0 @@
-Add example shell programs to this directory! Feel free to explain them here.
-
-Jonas:
-	I modified a shell program I found online to include a new function, read, that prints out the contents of a file. Shell program found from the tutorial here: https://brennan.io/2015/01/16/write-a-shell-in-c/. Actual program can be found in the “lsh” folder, with a file called “jonas_readme” explaining what I added/how to use it
