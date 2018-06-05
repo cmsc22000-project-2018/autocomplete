@@ -8,6 +8,7 @@
 #define INCLUDE_DICTIONARY_H_
 
 #include "../api/include/trie.h"
+#define MAXSTRLEN 60
 
 /* A dictionary struct, represented as a trie (mock trie for now) */
 typedef struct {
@@ -19,7 +20,7 @@ typedef struct {
  * Allocates a new dictionary.
  *
  * Parameters:
- *  - dict: A filename of a dictionary file
+ *  -none
  *
  * Returns:
  *  - A pointer to the dictionary, or NULL if a dictionary
@@ -38,6 +39,18 @@ dict_t* dict_new();
  *  - EXIT_SUCCESS on success, EXIT_FAILURE if an error occurs
  */
 int dict_init(dict_t *d);
+
+/*
+ * Allocates a new dictionary. Uses the official dictionary from the redis server
+ *
+ * Parameters:
+ *  - none
+ *
+ * Returns:
+ *  - A pointer to the dictionary, or NULL if a dictionary
+ *    cannot be allocated
+ */
+dict_t* dict_official();
 
 
 /*
@@ -90,6 +103,23 @@ int dict_add(dict_t *d, char *str);
  *  - EXIT_FAILURE if an error occurs
  */
 int dict_read(dict_t *d, char *file);
+
+
+/*
+ * Returns the n closest words to a given string in a dictionary.
+ * 
+ * Parameters:
+ *  - d: A dictionary. Must point to a dictionary allocated with dict_new
+ *  - str: A string. This will be the (misspelled) word to match
+ *  - max_edits: the maximum levenshtein distance the words in the set can have
+ *  - n: the number of strings to return. 
+ * 
+ * Returns:
+ *  - The first n strings with the smallest distance, where ties are broken by alphabetical order.
+ *    If there aren't enough matching strings, each remaining spot is set to NULL.
+ *  - NULL if there was an error
+ */
+char **dict_suggestions(dict_t *d, char *str, int max_edits, int n);
 
 
 #endif /* INCLUDE_DICTIONARY_H_ */

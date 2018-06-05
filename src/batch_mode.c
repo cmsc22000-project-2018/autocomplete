@@ -12,24 +12,46 @@ Program which implements batch mode autocomplete within the same framework as ba
 #include "batch_mode.h"
 #include "dictionary.h"
 
-#include "../api/include/trie.h"
+//#include "../api/include/trie.h"
 
 #define SHOWNWORDS 10
 #define MAXPREFLEN 32
+#define UNIX_MAX_PATH 4096
 
 
 // See batch_mode.h
 char** get_n_children_in_dict(char* s, char* dict_file, int n)
 {
-	
-	dict_t *d = dict_new();
-	int rc = dict_read(d, dict_file);
-	assert (rc == EXIT_SUCCESS);
+//	char *dict = malloc(UNIX_MAX_PATH * sizeof(char *));
+  //      strcpy(dict, dict_file);
 
-	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
+        dict_t *new_dict;
+        int msg;
+
+        if(strcmp(dict_file, "default") == 0) {
+                new_dict = dict_official();
+
+                if (new_dict == NULL) {
+                        msg = EXIT_FAILURE;
+                } else {
+                        msg = EXIT_SUCCESS;
+                }
+        } else {
+                new_dict = dict_new();
+                msg = dict_read(new_dict, dict_file);
+        	assert (msg == EXIT_SUCCESS);
+
+        }
+
+        if (msg == EXIT_FAILURE) {
+  		 fprintf(stderr, "get_n_children_in_dict: invalid dict file\n");
+                exit(0);
+        }	
+
+//	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
 	
 	printf("%s", s);
-	char** children = trie_approx(d->dict, s, 2, n); 
+	char** children = trie_approx(new_dict->dict, s, 2, n); 
 		//default for max_edit_dist in TRIE.APPROX is 2
 	
 	return children;
@@ -40,15 +62,35 @@ char** get_n_children_in_dict(char* s, char* dict_file, int n)
 int num_children_in_dict(char* s, char* dict_file) 
 {
 	
-	dict_t *d = dict_new();
-        int rc = dict_read(d, dict_file);
-        assert (rc == EXIT_SUCCESS);
+       // char *dict = malloc(UNIX_MAX_PATH * sizeof(char *));
+       // strcpy(dict, dict_file);
 
-	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
+        dict_t *new_dict;
+        int msg;
 
-	//int c = trie_count_completion(d->dict, s);
+        if(strcmp(dict_file, "default") == 0) {
+                new_dict = dict_official();
 
-        int c = 2;
+                if (new_dict == NULL) {
+                        msg = EXIT_FAILURE;
+                } else {
+                        msg = EXIT_SUCCESS;
+                }
+        } else {
+                new_dict = dict_new();
+                msg = dict_read(new_dict, dict_file);
+        	assert(msg == EXIT_SUCCESS);	
+	}
+
+	 if (msg == EXIT_FAILURE) {
+                fprintf(stderr, "get_n_children_in_dict: invalid dict file\n");
+                exit(0);
+        }
+
+//	assert ((trie_contains(d->dict, s) == 2) || (trie_contains(d->dict, s) == 0));
+
+	int c = trie_completions(new_dict->dict, s);
+
 	return c;
 }
 

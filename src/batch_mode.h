@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "prefix.h"
+#include "../api/include/trie.h"
+
 
 // Given a prefix and a dictionary file, returns a given number of valid children
 char** get_n_children_in_dict(char* s, char* dict_file, int n);
