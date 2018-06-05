@@ -1,9 +1,15 @@
 # autocomplete
- A command-line text autocomplete tool that uses Redis tries
+ A command-line text autocomplete tool that uses Redis tries.
+
+ At a high level, there are two modes: interactive mode and batch mode. 
+
+ In Interactive mode, you can interactive type text and autocomplete as you go.
+
+ In batch mode, you feed the program a file of prefixes and the program returns all possible completions. 
 
 ## Using the tool
 
-###### Interactive Mode Shell:
+###### Autocomplete Shell:
  After running interactive or batch mode, you will enter the interactive mode shell. It looks like this:
  ```
  AUTOCOMPLETE Instructions: interactive <flags> || batch <flags> || exit
