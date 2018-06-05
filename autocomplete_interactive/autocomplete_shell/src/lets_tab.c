@@ -1,5 +1,11 @@
 /*
 Program which implements a tab-based command
+Authors:
+Jonas Ciplickas
+David Yaffe
+Seth DeVries
+Anna Zipp
+Jeffrey Zhou
 */
 
 #include <ncurses.h>
@@ -12,6 +18,7 @@ Program which implements a tab-based command
 #include "batch_mode.h"
 #include "dictionary.h"
 
+// Defaults
 #define DEFAULT_DICTIONARY_FILE "./src/lcase_dict.txt"
 #define DEFAULT_AMT_COMPLETIONS 10
 #define DEFAULT_MAX_PREF_LEN 32
@@ -69,7 +76,6 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
   else
     childrenToDisplay = maxCompletions;
   for (i = 0; i < childrenToDisplay; i++) {
-
     //create pointer to "the rest" of the word
     partialChildren[i] = malloc(strlen(children[i]) + 1);
     strcpy(partialChildren[i], children[i]);
@@ -79,12 +85,6 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
   }
   if (num_children > maxCompletions)
     printw("Printed [%d] completions out of [%d] available\n", maxCompletions, num_children);
-
-  //print this after autocomplete options to make tabbing less messy
-  //if (length > 10) {
-  //  printw("Only the first ten possibilities displayed\n");
-  //  length = 10;
-  //}
 
   int c;
   y++;
@@ -117,6 +117,7 @@ char* autocomplete(char *word, char *dict, int length, int maxCompletions)
   printw("%s%s", word, partialChildren[moved-1]);
   clrtobot();
 
+  //adjusting for capital at beginning of word
   if (cap == true)
     children[moved-1][0] -= ('a' - 'A');
 
@@ -133,13 +134,12 @@ int lets_tab_builtin(char **args)
 
   struct word *word = NULL; //list
 
-	//bool server = false;
 	char *dict;
 
-	if (args[0] != NULL) {
+	// Sets dictionary
+  if (args[0] != NULL) {
 		if (strncmp(args[0], "-s", 2) == 0) {
-	    dict = "./src/test_prefixes.txt"; //placeholder for server location of dictionary
-			//server = true;
+	    dict = "./src/test_prefixes.txt"; 
 		} else {
 			dict = args[1];
 		}
@@ -178,13 +178,15 @@ int lets_tab_builtin(char **args)
       total_length++;
     }
 
+    // Backspace or any variation of newline
     if (c == 32 || c == 10 || c == 11 || c == 13) {
       word->prefix_length = -1;
       length = 0;
     }
 
+    // Pressing tab triggers autocomplete function
     if (c == 9 && length > 0) {
-
+      // Fetching typed word from the llist
       char *wordTyped = malloc(sizeof(char)*(word->prefix_length+1));
       int i = word->prefix_length;
       wordTyped[word->prefix_length] = '\0';
@@ -194,7 +196,8 @@ int lets_tab_builtin(char **args)
         word = ll_pop(word);
       }
 
-		  int maxCompletions = -1;
+		  // Setting number of completions
+      int maxCompletions = -1;
 			bool n_flag_found = false;
 			int flag = 0;
 			for (; flag < amountOfArgs; flag++) {
@@ -209,11 +212,11 @@ int lets_tab_builtin(char **args)
 			if (n_flag_found == true)
 			  if (args[flag+1] != NULL)
 				  maxCompletions = atoi(args[flag+1]);
-		  //if (amountOfArgs >= 3)
-				//if(args[2] != NULL)
-				  //maxCompletions = atoi(args[2]);
+      
+      // Autocomplete function, returns the autocompleted word
       char *complete_word = autocomplete(wordTyped, dict, length, maxCompletions);
       length = 0;
+      // Puts the autocompleted work back into the llist
       for (i = 0; complete_word[i] != '\0'; i++) {
         word = ll_new(word);
         word->letter = complete_word[i];
@@ -222,6 +225,8 @@ int lets_tab_builtin(char **args)
         total_length++;
       }
     }
+
+    // Delete or backspace functionality
 
     if (c == 127 || c == 8) {
         getyx(stdscr, y, x);
@@ -292,10 +297,12 @@ int lets_tab_builtin(char **args)
       char screen[total_length];
       j = total_length;
       struct word *tmp;
+      // Transfers the llist to a char array
       for (tmp = word; tmp != NULL; tmp = ll_next(tmp)) {
         screen[j] = tmp->letter;
         j--;
       }
+      // Writes the screen to the file
       FILE *fp = fopen(complete_filename, "w");
       if (fp) {
         for (j = 1; j <= total_length; j++) {
@@ -304,6 +311,7 @@ int lets_tab_builtin(char **args)
          fclose(fp);
         printw("\nfile save successful! press enter to continue");
         int c_1;
+        // Clears prompt when you press enter
         while (10 != (c_1 = getch()))
           ;
         move(y, x);
