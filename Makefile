@@ -1,26 +1,69 @@
-.PHONY: all clean
-.RECIPEPREFIX +=
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2016/12/13 11:43:23 by jrameau           #+#    #+#              #
+#    Updated: 2017/05/21 14:58:05 by jrameau          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-#Variables copied from task4, standard as seen in lab
+# Project file
+NAME = autocomplete
+
+# Project builds and dirs
+SRCDIR = ./src/
+SRCNAMES = $(shell ls $(SRCDIR) | grep -E ".+\.c")
+SRC = $(addprefix $(SRCDIR), $(SRCNAMES))
+INC = ./inc/
+BUILDDIR = ./build/
+BUILDOBJS = $(addprefix $(BUILDDIR), $(SRCNAMES:.c=.o))
+
+# Libft builds and dirs
+LIBDIR = ./libft/
+LIBFT = ./libft/libft.a
+LIBINC = ./libft/includes/
+
+# Optimization and Compiler flags and commands
 CC = gcc
-CFLAGS = -O2 -Wall -Wextra -g -fPIC -c
-RM = rm -f
+CFLAGS = -Wall -Werror -Wextra
 
-SRCS = ./src/autocomplete.c ./src/parser.c ./src/prefix.c ./src/dictionary.c ./src/mock_trie.c
-OBJS = $(SRCS:.c=.o)
+# Debugging flags
+DEBUG = -g
 
-#Resulting binary from makefile
-BINS = autocomplete
+# Main rule
+all: $(BUILDDIR) $(LIBFT) $(NAME)
 
-#Flags location for header files
-IFLAGS = -I./include/
+# Object dir rule
+$(BUILDDIR):
+	mkdir -p $(BUILDDIR)
 
-all: $(BINS)
+# Objects rule
+$(BUILDDIR)%.o:$(SRCDIR)%.c
+	$(CC) $(CFLAGS) -I$(LIBINC) -I$(INC) -o $@ -c $<
 
+# Project file rule
+$(NAME): $(BUILDOBJS)
+	$(CC) $(CFLAGS) -o $(NAME) $(BUILDOBJS) $(LIBFT) -lncurses
+
+# Libft rule
+$(LIBFT):
+	make -C $(LIBDIR)
+
+# Cleaning up the build files
 clean:
-  $(RM) $(BINS)
+	rm -rf $(BUILDDIR)
+	make -C $(LIBDIR) clean
 
-$(BINS): $(SRCS)
-  $(CC) $(IFLAGS) $^ -o $(BINS)
+# Getting rid of the project file
+fclean: clean
+	rm -rf $(NAME)
+	make -C $(LIBDIR) fclean
 
-test:
+# Do both of the above
+re: fclean all
+
+# Just in case those files exist in the root dir
+.PHONY: all fclean clean re

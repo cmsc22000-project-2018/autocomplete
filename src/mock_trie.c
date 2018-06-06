@@ -10,18 +10,18 @@
 /*
 * See mock_trie.h
 */
-trie_t* trie_new(){
+trie_t* trie_new()
+{
     trie_t *t;
     t = malloc(sizeof(trie_t));
     int rc;
 
     if (t == NULL) {
-      return NULL;
+        return NULL;
     }
 
     rc = trie_init(t);
-    if(rc != EXIT_SUCCESS)
-    {
+    if(rc != EXIT_SUCCESS) {
         return NULL;
     }
     return t;
@@ -30,7 +30,8 @@ trie_t* trie_new(){
 /*
 * See mock_trie.h
 */
-int trie_init(trie_t *t){
+int trie_init(trie_t *t)
+{
     assert(t != NULL);
 
     char **w;
@@ -46,7 +47,8 @@ int trie_init(trie_t *t){
 /*
 * See mock_trie.h
 */
-int trie_free(trie_t *t){
+int trie_free(trie_t *t)
+{
     assert(t != NULL);
     assert(t->words != NULL);
 
@@ -67,7 +69,8 @@ int trie_free(trie_t *t){
 /*
 * See mock_trie.h
 */
-int trie_exists(trie_t *t, char *str) {
+int trie_exists(trie_t *t, char *str)
+{
     int i;
 
     for (i = 0; i < TRIE_LEN ; i++) {
@@ -82,7 +85,8 @@ int trie_exists(trie_t *t, char *str) {
 /*
 * See mock_trie.h
 */
-int trie_add(trie_t *t, char *str){
+int trie_add(trie_t *t, char *str)
+{
     int i = 0;
 
     while (i < TRIE_LEN && t->words[i] != NULL) {
